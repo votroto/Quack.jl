@@ -1,4 +1,9 @@
-using Tets
+using Test
 
-include("test_init.jl")
-include("test_oracle.jl")
+@testset "init" begin
+    include("test_init.jl")
+end
+
+@testset "oracle" begin
+    include("test_oracle.jl")
+end
