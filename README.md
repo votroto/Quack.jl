@@ -1,2 +1,3 @@
-# Quack.jl
+# Quack
+
 Multiple Oracle algorithm without the oracles (this is silly).
