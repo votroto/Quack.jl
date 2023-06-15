@@ -23,9 +23,9 @@ end
 @testset "minimize parabola over disc" begin
     point = ax, ay = randn(2)
     center = bx, by = randn(2)
-    
-    variables = @variables x y
-    variables = scalarize(variables)
+
+    @variables x y
+    variables = scalarize((x, y))
     cost = ((x - ax)^2 + (y - ay)^2)
     domain = [(x - bx)^2 + (y - by)^2 ≲ 1]
 
@@ -40,9 +40,9 @@ end
 @testset "minimize parabola over square" begin
     point = ax, ay = randn(2)
     center = bx, by = randn(2)
-    
-    variables = @variables x y
-    variables = scalarize(variables)
+
+    @variables x y
+    variables = scalarize((x, y))
     cost = ((x - ax)^2 + (y - ay)^2)
     domain = [(x - bx)^2 ≲ 1, (y - by)^2 ≲ 1]
 
