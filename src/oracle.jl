@@ -5,7 +5,7 @@ import Symbolics as Sym
 
 function interior_init(
     domains;
-    variables=Sym.get_variables.(domains)
+    variables=unique(vcat(Sym.get_variables.(domains)...))
 )
     interior = sum(_inequality_to_expr.(domains))
 

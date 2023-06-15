@@ -24,8 +24,9 @@ end
     point = ax, ay = randn(2)
     center = bx, by = randn(2)
 
-    @variables x y
-    variables = scalarize((x, y))
+    variables = @variables x y
+    variables = scalarize(variables)
+
     cost = ((x - ax)^2 + (y - ay)^2)
     domain = [(x - bx)^2 + (y - by)^2 ≲ 1]
 
@@ -41,8 +42,9 @@ end
     point = ax, ay = randn(2)
     center = bx, by = randn(2)
 
-    @variables x y
-    variables = scalarize((x, y))
+    variables = @variables x y
+    variables = scalarize(variables)
+
     cost = ((x - ax)^2 + (y - ay)^2)
     domain = [(x - bx)^2 ≲ 1, (y - by)^2 ≲ 1]
 
