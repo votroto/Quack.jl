@@ -31,3 +31,20 @@ function oracle(
 
     stats.objective, values
 end
+
+
+function oracle(
+    costs, 
+    domains,
+    actions,
+    weights;
+    variables=Sym.get_variables(cost)
+)
+    model = NLP.SymNLPModel(cost, domain)
+    stats = ipopt(model; print_level=0)
+
+    solution = NLP.parse_solution(model, stats.solution)
+    values = NLP.value(solution, variables)
+
+    stats.objective, values
+end

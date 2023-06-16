@@ -15,8 +15,8 @@ end
 
 function iterate(mo::QuackIterable, pures=mo.init)
 	values, strategies = equilibrium(mo.payoff, mo.domain, pures)
-	best, responses = oracle(mo.payoff, mo.domain, strategies)
+	best, responses = oracle(mo.payoff, mo.domain, pures, strategies)
 	extended = unique.(vcat.(pures, responses), dims=1)
 
-	(strategies, values, best), extended
+	(pures, strategies, values, best), extended
 end

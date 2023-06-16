@@ -1,63 +1,76 @@
 using HomotopyContinuation
-using Base.Iterators: flatten
+using LinearAlgebra: dot
+using Base.Iterators: flatten, take, drop
 
-function _hc_value(variable, system, path)
-        i = findfirst(isequal(variable), system.variables)
-        path.solution[i]
+function extract_solution(player_vars, sol)
+        len = length(player_vars)
+        result = Array{Any}(undef, len)
+        rs = sol
+        for (p, vs) in enumerate(player_vars)
+                lvs = length(vs)
+                result[p] = take(rs, lvs)
+                rs = drop(rs, lvs)
+        end
+        (sol[end-len+1:end], collect.(result))
 end
 
-function extract_solution(s, player_vars, system, path)
-        _value(var) = real(_hc_value(var, system, path))
-
-        payoffs = _value.(s)
-        strats = [_value.(p) for p in player_vars]
-
-        (payoffs, strats)
-end
-
-function _is_strategy(strats; tol=1e-3)
-        sums_to_one(s) = isapprox(sum(s), 1; atol=tol)
-        between_0_1(s) = all((i >= 0 - tol) for i in s)
+function is_plausible(strats; eps=1e-3)
+        sums_to_one(s) = isapprox(sum(s), 1; rtol=eps)
+        between_0_1(s) = all((i >= 0 - eps && i <= 1 + eps) for i in s)
 
         all(between_0_1(s) && sums_to_one(s) for s in strats)
 end
 
-function _is_solution(s, xs, system, path)
-        (_, x) = extract_solution(s, xs, system, path)
-        is_real(path) && _is_strategy(x)
+function is_br(payoffs, strats; eps=1e-3)
+        players = eachindex(payoffs)
+
+        pays = [
+                _bug_ncon([payoffs[i], strats[js]...], [np, njs...])
+                for (i, js, np, njs) in _ncon_ids(players)
+        ]
+        maxes = maximum.(pays)
+        actuals = dot.(pays, strats)
+
+        all(isapprox(actuals[i], maxes[i], rtol=eps) for i in players)
 end
 
 function solve_homotopy(payoffs; start_system=:polyhedral)
+        ne_predicate((v, x)) = is_plausible(x) && is_br(payoffs, x)
+        stop_predicate(path) = ne_predicate((nothing, real(path.solution)))
         players = eachindex(payoffs)
-        actions = axes(first(payoffs))
 
-        xs = [first(@var x[d, a]) for (d, a) in enumerate(actions)]
+        x = [
+                [Variable(:x, d, i) for i in a]
+                for (d, a) in enumerate(axes(payoffs[1]))
+        ]
         @var s[players]
 
-        pays = unilateral_payoffs(payoffs, xs, players)
+        sum_to_one = [sum(x[p]) - 1 for p in players]
+        is_best = [
+                x[i] .* (s[i] .- _bug_ncon([payoffs[i], x[js]...], [np, njs...]))
+                for (i, js, np, njs) in _ncon_ids(players)
+        ]
 
-        constr_simplex = [sum(xs[p]) - 1 for p in players]
-        constr_best_resp = [xs[i] .* (s[i] .- p) for (i, p) in enumerate(pays)]
+        vars = collect(flatten([x; s]))
+        G = System([sum_to_one; is_best...], variables=vars)
 
-        variables = collect(flatten([xs; s]))
-        system = System([constr_simplex; constr_best_resp...], variables)
-
-        result = HomotopyContinuation.solve(system; 
+        res = HomotopyContinuation.solve(G;
                 show_progress=false,
                 compile=false,
-                tracker_options=TrackerOptions(parameters=:fast),
-                stop_early_cb=p->_is_solution(s, xs, system, p),
+                stop_early_cb=stop_predicate,
                 start_system)
-        
-        [extract_solution(s, xs, system, p) for p in result.path_results]
+        outs = real_solutions(res)
+        sols = extract_solution.(Ref(x), outs)
+
+        filter(ne_predicate, sols)
 end
 
 function multiple_start_homotopy(payoffs)
-        _first(xs) = get(xs, 1, missing) # why is this not a function?
+        _last(xs) = get(xs, length(xs), missing) # why is this not a function?
         pol() = solve_homotopy(payoffs; start_system=:polyhedral)
         deg() = solve_homotopy(payoffs; start_system=:total_degree)
 
-        @coalesce _first(pol()) _first(deg())
+        @coalesce _last(pol()) _last(deg())
 end
 
 """
