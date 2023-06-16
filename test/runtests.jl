@@ -12,4 +12,8 @@ using Test
     @testset "equilibrium" begin
         include("test_subgame.jl")
     end
+
+    @testset "homotopy" begin
+        include("test_homo_nash.jl")
+    end
 end
