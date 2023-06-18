@@ -1,6 +1,7 @@
 module Quack
 
 export quack_oracle, interior_init, oracle
+export until_eps, fixed_iters
 
 include("utils.jl")
 include("symbolics_utils.jl")

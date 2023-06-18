@@ -35,3 +35,27 @@ function unilateral_payoffs(
     end
     map(contract, _ncon_ids(players))
 end
+
+function unilateral_payoffs(
+    costs, 
+    pures, 
+    weights; 
+    variables = Sym.get_variables.(costs),
+    players = eachindex(variables)
+)
+    insert_at(xs, y, i) = [xs[1:i - 1]; [y]; xs[i:end]]
+    ids = map(eachindex, weights)
+    function deviation_i(i)
+        total = 0
+        others = players[begin:end.!=i]
+        for others_ids in Iterators.product(ids[others]...)
+            weight = prod(weights[o][i] for (o, i) in zip(others, others_ids))
+            ps = [pures[o][:, i] for (o, i) in zip(others, others_ids)]
+            full = insert_at(ps, variables[i], i)
+            total += weight * costs[i](full...)
+        end
+        Sym.simplify(total; expand=true)
+    end
+
+    [deviation_i(i) for i in players]
+end
