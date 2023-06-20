@@ -9,7 +9,7 @@ using LinearAlgebra: norm
     variables = [x]
     domain = [(x[1] - ax)^2 ≲ 1]
 
-    actual_pt, = interior_init(domain)
+    actual_pt, = interior_init(domain; variables)
 
     direction_norm = norm(center - actual_pt)
     @test direction_norm <= 1

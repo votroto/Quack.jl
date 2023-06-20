@@ -70,7 +70,7 @@ function multiple_start_homotopy(payoffs)
         pol() = solve_homotopy(payoffs; start_system=:polyhedral)
         deg() = solve_homotopy(payoffs; start_system=:total_degree)
 
-        @coalesce _last(pol()) _last(deg())
+        @coalesce _last(pol()) _last(deg()) 
 end
 
 """

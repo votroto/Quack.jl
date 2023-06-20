@@ -59,3 +59,13 @@ function unilateral_payoffs(
 
     [deviation_i(i) for i in players]
 end
+
+# HC fails to solve otherwise
+"""Adds a column to a matrix if it does not exist already"""
+function uniqhcat(xs, y)
+	if !any(isapprox(y; atol=1e-12), eachcol(xs))
+		hcat(xs, y)
+	else
+		xs
+	end
+end

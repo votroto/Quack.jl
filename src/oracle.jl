@@ -16,15 +16,15 @@ function interior_init(
     solution = NLP.parse_solution(model, stats.solution)
     values = [NLP.value.(Ref(solution), vs) for vs in variables]
 
-    @show values
+    values
 end
 
 function oracle(
-    cost, 
+    payoff, 
     domain; 
-    variables=Sym.get_variables(cost)
+    variables=Sym.get_variables(payoff)
 )
-    model = NLP.SymNLPModel(cost, domain)
+    model = NLP.SymNLPModel(-payoff, domain; variables)
     stats = ipopt(model; print_level=0)
 
     solution = NLP.parse_solution(model, stats.solution)
@@ -34,16 +34,16 @@ function oracle(
 end
 
 function oracle(
-    costs, 
+    payoffs, 
     domains,
     actions,
     weights;
     variables=Sym.get_variables(cost)
 )
     players = eachindex(variables)
-    unilateral = unilateral_payoffs(costs, actions, weights; variables)
+    unilateral = unilateral_payoffs(payoffs, actions, weights; variables)
     improved = [
-        oracle(unilateral[i], [domains[i]]; variables=variables[i]) 
+        oracle(unilateral[i], [domains[i]]; variables=collect(variables[i]))
         for i in players
     ]
     unzip(improved)

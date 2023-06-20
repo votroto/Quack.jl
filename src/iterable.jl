@@ -32,7 +32,7 @@ function iterate(mo::QuackIterable, actions=mo.start)
 		mo.payoffs, mo.domains, actions, mixed; 
 		variables=mo.variables
 	)
-	extended = vcat.(actions, responses)
+	extended = uniqhcat.(actions, responses)
 
 	(actions, mixed, values, best), extended
 end
