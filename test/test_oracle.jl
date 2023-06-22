@@ -33,7 +33,7 @@ end
     actual_obj, actual_pt = oracle(-cost, domain; variables)
 
     expected_pt = closest_point_in_disc(center, point)
-    expected_obj = norm(point - expected_pt)^2
+    expected_obj = -norm(point - expected_pt)^2
     @test isapprox(expected_pt, actual_pt; atol=1e-3)
     @test isapprox(expected_obj, actual_obj; atol=1e-3)
 end
@@ -51,7 +51,7 @@ end
     actual_obj, actual_pt = oracle(-cost, domain; variables)
 
     expected_pt = closest_point_in_square(center, point)
-    expected_obj = norm(point - expected_pt)^2
+    expected_obj = -norm(point - expected_pt)^2
     @test isapprox(expected_pt, actual_pt; atol=1e-3)
     @test isapprox(expected_obj, actual_obj; atol=1e-3)
 end

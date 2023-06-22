@@ -79,5 +79,5 @@ end
 Compute the Nash equilibrium of a general matrix game using homotopy methods.
 """
 function nash_equilibrium(payoffs::NTuple)
-        multiple_start_homotopy(payoffs)
+        @show multiple_start_homotopy(payoffs)
 end

@@ -30,7 +30,7 @@ function oracle(
     solution = NLP.parse_solution(model, stats.solution)
     values = NLP.value(solution, variables)
 
-    stats.objective, values
+    -stats.objective, values
 end
 
 function oracle(
