@@ -34,5 +34,5 @@ function iterate(mo::QuackIterable, actions=mo.start)
 	)
 	extended = uniqhcat.(actions, responses)
 
-	@show (actions, mixed, values, best), extended
+	(actions, mixed, values, best), extended
 end
