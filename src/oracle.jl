@@ -20,8 +20,8 @@ function interior_init(
 end
 
 function oracle(
-    payoff, 
-    domain; 
+    payoff,
+    domain;
     variables=Sym.get_variables(payoff)
 )
     model = NLP.SymNLPModel(-payoff, domain; variables)
@@ -34,7 +34,7 @@ function oracle(
 end
 
 function oracle(
-    payoffs, 
+    payoffs,
     domains,
     actions,
     weights;

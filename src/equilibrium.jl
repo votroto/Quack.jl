@@ -9,6 +9,6 @@ _subgames(payoffs, actions) = map(p -> _subgame(p, actions), payoffs)
 Compute the player equilibrium strategies in a subgame restricted to actions.
 """
 function equilibrium(payoffs, actions)
-	subproblem = _subgames(payoffs, actions)
-	nash_equilibrium(subproblem)
+    subproblem = _subgames(payoffs, actions)
+    nash_equilibrium(subproblem)
 end
