@@ -27,8 +27,8 @@ Computes the payoffs that each player could get by unilateral deviation.
 """
 function unilateral_payoffs(
     payoffs::NTuple{N,AbstractArray},
-    strategies,
-    players
+    strategies;
+    players = eachindex(variables)
 ) where {N}
     function contract((i, js, np, njs))
         _bug_ncon([payoffs[i], strategies[js]...], [np, njs...])
