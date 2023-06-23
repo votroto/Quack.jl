@@ -1,17 +1,22 @@
 # Quack
 
-Multiple Oracle algorithm without the oracles (this is silly).
+Multiple Oracle algorithm without the oracles (this is silly and **unstable**).
 
-## VERY UNSTABLE
+## Example Torus Game (Chasnov 2019)
 
-Example of a polynomial guessing game `(x-y)^2` on the unit square:
-```jl
-@variables x y
+Running a fixed number of iterations on a two-player game with agents’ joint strategy space on a torus. The game has two pure equilibria at (-1.063, 1.014) and (1.408, -0.325).
+```julia
+@variables θ[1:2]
+α = [1, 1.5]
+ϕ = [0, π/8]
 
-pays = ((x-y)^2, -(x-y)^2)
-doms = [x^2 ≲ 1, y^2 ≲ 1]
-vars = [(x,), (y,)]
+p1 = α[1] * cos(θ[1] - ϕ[1]) - cos(θ[1] - θ[2])
+p2 = α[2] * cos(θ[2] - ϕ[2]) - cos(θ[2] - θ[1])
+
+pays = (p1, p2)
+doms = [θ[1]^2 ≲ π^2, θ[2]^2 ≲ π^2]
+vars = [(θ[1],), (θ[2],)]
 
 quack = quack_oracle(pays, doms; variables=vars)
-(actions, mixed, values, best) = fixed_iters(quack, 5)
+(pure, prob, values, best) = fixed_iters(quack, 5)
 ```
