@@ -1,6 +1,7 @@
 import Base: iterate, IteratorSize, IsInfinite
 using LinearAlgebra
-using Base.Iterators: dropwhile
+using Base.Iterators: dropwhile, flatten, take, drop
+
 
 dropwhile_enumerate(pred, itr) = dropwhile(x -> pred(x[2]), enumerate(itr))
 
