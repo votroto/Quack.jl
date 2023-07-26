@@ -1,7 +1,7 @@
 using TensorOperations: ncon
 import Symbolics as Sym
 
-max_incentive((_, _, values, best)) = (@show values, best; norm(best - values, Inf))
+max_incentive((_, _, values, best)) = norm(best - values, Inf)
 
 # Thanks, ivirshup! Julia, please implement.
 unzip(a) = map(x -> getfield.(a, x), fieldnames(eltype(a)))
@@ -62,10 +62,12 @@ end
 
 # HC fails to solve otherwise
 """Adds a column to a matrix if it does not exist already"""
-function uniqhcat(xs, y)
-    if !any(isapprox(y; atol=1e-12), eachcol(xs))
-        hcat(xs, y)
+function uniqhcat(xs, y; atol=1e-8)
+    if !any(isapprox(y; atol), eachcol(xs))
+        res = hcat(xs, y)
     else
-        xs
+        res = xs
     end
+    res
+    #res[:, max(end-1,begin):end]
 end
