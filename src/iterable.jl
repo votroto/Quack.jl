@@ -34,25 +34,5 @@ function iterate(mo::QuackIterable, actions=mo.start)
     best, responses = oracle(payoffs, domains, actions, mixed; variables)
     extended = uniqhcat.(actions, responses)
 
-    worsts =  worst(payoffs, actions, mixed)
-    for (i, e) in enumerate(extended)
-        if length(e) > 2
-            extended[i] = extended[i][:, begin:end .!= worsts[i]]
-        end
-    end
-
     (actions, mixed, values, best), extended
-end
-
-
-function worst(payoffs, actions, strategies)
-    ps = _subgames(payoffs, actions)
-    players = eachindex(payoffs)
-
-    pays = [
-        _bug_ncon([ps[i], strategies[js]...], [np, njs...])
-        for (i, js, np, njs) in _ncon_ids(players)
-    ]
-
-    argmin.(pays)
 end
