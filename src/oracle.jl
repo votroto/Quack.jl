@@ -5,32 +5,35 @@ import Symbolics as Sym
 
 function interior_init(
     domains;
-    variables=Sym.get_variables.(domains)
+    variables=domains_variables(domains)
 )
-    varcat = unique(vcat(variables...))
-    interior = sum(_inequality_to_expr.(domains))
+    player_vals(sol, vs) = map(v -> NLP.value(sol, v), vs)
+    all_inits(sol) = map(vs -> [player_vals(sol, vs)], variables)
 
-    model = NLP.SymNLPModel(interior, domains; variables=varcat)
+    domcat = collect(tuplecat(domains...))
+    varcat = tuplecat(variables...)
+    interior = Sym.Num(sum(_inequality_to_expr.(domcat)))
+
+    model = NLP.SymNLPModel(interior, domcat; variables=varcat)
     stats = ipopt(model; print_level=0)
 
     solution = NLP.parse_solution(model, stats.solution)
-    values = [NLP.value.(Ref(solution), vs) for vs in variables]
-
-    values
+    
+    all_inits(solution)
 end
 
 function oracle(
     payoff,
     domain;
-    variables=Sym.get_variables(payoff)
+    variables=player_variables(domain)
 )
-    model = NLP.SymNLPModel(-payoff, domain; variables)
+    model = NLP.SymNLPModel(-payoff, collect(domain); variables=collect(variables))
     stats = ipopt(model; print_level=0)
 
     solution = NLP.parse_solution(model, stats.solution)
-    values = NLP.value(solution, variables)
+    values =  map(v -> NLP.value(solution, v), variables)
 
-    -stats.objective, values
+    -stats.objective, Tuple(values)
 end
 
 function oracle(
@@ -38,13 +41,15 @@ function oracle(
     domains,
     actions,
     weights;
-    variables=Sym.get_variables(cost)
+    variables=player_variables.(domains)
 )
     players = eachindex(variables)
+
     unilateral = unilateral_payoffs(payoffs, actions, weights; variables)
     improved = [
-        oracle(unilateral[i], [domains[i]]; variables=collect(variables[i]))
+        oracle(unilateral[i], domains[i]; variables=variables[i])
         for i in players
     ]
-    unzip(improved)
+    as, bs = unzip(improved)
+    Tuple(as), Tuple(bs)
 end

@@ -1,6 +1,6 @@
 using Base.Iterators: product
 
-_subgame(payoff, actions) = map(a -> payoff(a...), product(eachcol.(actions)...))
+_subgame(payoff, actions) = map(a -> payoff(a...), product(actions...))
 _subgames(payoffs, actions) = map(p -> _subgame(p, actions), payoffs)
 
 """

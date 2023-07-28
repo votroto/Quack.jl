@@ -18,21 +18,22 @@ end
 IteratorSize(::Type{QuackIterable}) = IsInfinite()
 
 function quack_oracle(
-    payoffs,
-    domains;
-    variables=Sym.get_variables.(domain),
-    start=interior_init(domains)
-)
-    callable = _compile_sym.(payoffs, Ref(variables))
+    payoffs::NTuple{N},
+    domains::NTuple{N};
+    variables::NTuple{N}=domains_variables(domains),
+    start::NTuple{N}=interior_init(domains)
+) where N
+    callable = map(p -> _compile_sym(p, variables), payoffs)
     QuackIterable(callable, domains, variables, start)
 end
 
 function iterate(mo::QuackIterable, actions=mo.start)
     payoffs, domains, variables = mo.payoffs, mo.domains, mo.variables
 
+    actions, variables
     values, mixed = equilibrium(payoffs, actions)
     best, responses = oracle(payoffs, domains, actions, mixed; variables)
-    extended = uniqhcat.(actions, responses)
+    extended = uniqpush.(actions, responses)
 
     (actions, mixed, values, best), extended
 end

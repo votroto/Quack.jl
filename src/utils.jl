@@ -6,6 +6,12 @@ max_incentive((_, _, values, best)) = norm(best - values, Inf)
 # Thanks, ivirshup! Julia, please implement.
 unzip(a) = map(x -> getfield.(a, x), fieldnames(eltype(a)))
 
+tuplecat(as...) = vcat(collect.(as)...)
+
+player_variables(domain) = Tuple(unique(vcat(Symbolics.get_variables.(domain)...)))
+
+domains_variables(domains) = @show map(player_variables, domains)
+
 function _bug_ncon(gts, args...; kwargs...)
     ts = collect.(gts) # genericity bug in TensorOperations
     ncon(ts, args...; kwargs...)
@@ -37,11 +43,11 @@ function unilateral_payoffs(
 end
 
 function unilateral_payoffs(
-    costs,
+    payoffs,
     pures,
     weights;
-    variables=Sym.get_variables.(costs),
-    players=eachindex(variables)
+    variables,
+    players=eachindex(payoffs)
 )
     insert_at(xs, y, i) = [xs[1:i-1]; [y]; xs[i:end]]
     ids = map(eachindex, weights)
@@ -50,9 +56,10 @@ function unilateral_payoffs(
         others = players[begin:end.!=i]
         for others_ids in Iterators.product(ids[others]...)
             weight = prod(weights[o][i] for (o, i) in zip(others, others_ids))
-            ps = [pures[o][:, i] for (o, i) in zip(others, others_ids)]
+            ps = [pures[o][i] for (o, i) in zip(others, others_ids)]
+            ps, variables[i]
             full = insert_at(ps, variables[i], i)
-            total += weight * costs[i](full...)
+            total += weight * payoffs[i](full...)
         end
         Sym.simplify(total; expand=true)
     end
@@ -62,12 +69,11 @@ end
 
 # HC fails to solve otherwise
 """Adds a column to a matrix if it does not exist already"""
-function uniqhcat(xs, y; atol=1e-8)
-    if !any(isapprox(y; atol), eachcol(xs))
-        res = hcat(xs, y)
+function uniqpush(xs, y; atol=1e-8)
+    if !any(x -> isapprox(collect(y), collect(x); atol), xs)
+        res = [xs; y]
     else
         res = xs
     end
-    res
-    #res[:, max(end-1,begin):end]
+    res[max(begin,end-2):end]
 end
