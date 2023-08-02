@@ -1,7 +1,7 @@
 name = "Quack"
 uuid = "e13256e9-5c5d-4f21-8ec4-a2cc72ac633f"
 authors = ["Tomas Votroubek <tomas.votroubek@outlook.com>"]
-version = "0.2.0"
+version = "0.3.0"
 
 [deps]
 ADNLPModels = "54578032-b7ea-4c30-94aa-7cbd1cce6c9a"

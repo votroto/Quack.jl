@@ -14,8 +14,8 @@ p1 = α[1] * cos(θ[1] - ϕ[1]) - cos(θ[1] - θ[2])
 p2 = α[2] * cos(θ[2] - ϕ[2]) - cos(θ[2] - θ[1])
 
 pays = (p1, p2)
-doms = [θ[1]^2 ≲ π^2, θ[2]^2 ≲ π^2]
-vars = [(θ[1],), (θ[2],)]
+doms = ((θ[1]^2 ≲ π^2,), (θ[2]^2 ≲ π^2,))
+vars = ((θ[1],), (θ[2],))
 
 quack = quack_oracle(pays, doms; variables=vars)
 (pure, prob, values, best) = fixed_iters(quack, 5)
