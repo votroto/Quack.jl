@@ -1,7 +1,7 @@
 using TensorOperations: ncon
 import Symbolics as Sym
 
-max_incentive((_, _, values, best)) = norm(best - values, Inf)
+max_incentive((_, _, values, best)) = norm(collect(best) - collect(values), Inf)
 
 # Thanks, ivirshup! Julia, please implement.
 unzip(a) = map(x -> getfield.(a, x), fieldnames(eltype(a)))
@@ -71,9 +71,8 @@ end
 """Adds a column to a matrix if it does not exist already"""
 function uniqpush(xs, y; atol=1e-8)
     if !any(x -> isapprox(collect(y), collect(x); atol), xs)
-        res = [xs; y]
+        [xs; y]
     else
-        res = xs
+        xs
     end
-    res[max(begin,end-2):end]
 end

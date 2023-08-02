@@ -34,7 +34,7 @@ end
 
     expected_pt = closest_point_in_disc(center, point)
     expected_obj = -norm(point - expected_pt)^2
-    @test isapprox(expected_pt, actual_pt; atol=1e-3)
+    @test isapprox(expected_pt, collect(actual_pt); atol=1e-3)
     @test isapprox(expected_obj, actual_obj; atol=1e-3)
 end
 
@@ -52,9 +52,6 @@ end
 
     expected_pt = closest_point_in_square(center, point)
     expected_obj = -norm(point - expected_pt)^2
-    @test isapprox(expected_pt, actual_pt; atol=1e-3)
+    @test isapprox(expected_pt, collect(actual_pt); atol=1e-3)
     @test isapprox(expected_obj, actual_obj; atol=1e-3)
 end
-
-
-
