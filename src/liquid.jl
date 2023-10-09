@@ -32,7 +32,23 @@ function ld_f(wcc, xs, v)
     br
 end
 
-function rand_wcc(n, m)
+function wcc_br(wcc, actions, mixed)
+    lactions = [act[argmax(mixed)] for act in actions]
+    Tuple(0 for v in wcc.V), Tuple(ld_f(wcc, lactions, v) for v in wcc.V)
+end
+
+function wcc_init(wcc)    
+    init = Tuple(zeros(length(wcc.C)) for _ in wcc.V)
+    for (v, Sv) in enumerate(wcc.S) 
+        for s in Sv
+            init[v][s] = normalize(rand(length(s)), 1) * wcc.b[v, s]
+        end
+    end
+
+    Tuple([i] for i in init)
+end
+
+function wcc_rand(n, m)
     V = 1:n
     C = 1:m
 

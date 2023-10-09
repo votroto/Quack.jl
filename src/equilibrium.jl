@@ -1,14 +1,9 @@
 using Base.Iterators: product
 
-_subgame(payoff, actions) = map(a -> payoff(a...), product(actions...))
-_subgames(payoffs, actions) = map(p -> _subgame(p, actions), payoffs)
+_subgame(wcc, v, actions) = map(a -> -ld_r(wcc, a, v), product(actions...))
+_subgames(wcc, actions) = map(v -> _subgame(wcc, v, actions), Tuple(wcc.V))
 
-"""
-    equilibrium(payoffs, actions)
-
-Compute the player equilibrium strategies in a subgame restricted to actions.
-"""
-function equilibrium(payoffs, actions)
-    subproblem = _subgames(payoffs, actions)
+function equilibrium(wcc, actions)
+    subproblem = _subgames(wcc, actions)
     nash_equilibrium(subproblem)
 end

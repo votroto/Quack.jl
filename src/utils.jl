@@ -70,8 +70,9 @@ end
 # HC fails to solve otherwise
 """Adds a column to a matrix if it does not exist already"""
 function uniqpush(xs, y; atol=1e-8)
+    #return [y]
     if !any(x -> isapprox(collect(y), collect(x); atol), xs)
-        [xs; y]
+        [xs..., y]
     else
         xs
     end
