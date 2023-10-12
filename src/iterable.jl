@@ -27,6 +27,5 @@ function iterate(mo::QuackIterable, actions=mo.start)
     best, responses = wcc_br(mo.wcc, actions, mixed)
     extended = uniqpush.(actions, responses)
 
-    @show values
     (actions, mixed, values, best), extended
 end

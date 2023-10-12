@@ -1,6 +1,11 @@
 using LinearAlgebra: normalize, norm
 using Random: shuffle
 using Base.Iterators: partition
+using JuMP
+using Gurobi
+using LinearAlgebra
+
+_LP_SOLVER = optimizer_with_attributes(Gurobi.Optimizer, MOI.Silent() => true)
 
 struct WCC
     V
@@ -32,9 +37,39 @@ function ld_f(wcc, xs, v)
     br
 end
 
-function wcc_br(wcc, actions, mixed)
-    lactions = [act[argmax(mixed)] for act in actions]
-    Tuple(0 for v in wcc.V), Tuple(ld_f(wcc, lactions, v) for v in wcc.V)
+function wcc_br_pure(wcc, actions)
+    Tuple(0 for v in wcc.V), Tuple(ld_f(wcc, actions, v) for v in wcc.V)
+end
+
+function wcc_brs(wcc, actions, probs, player; optimizer=_LP_SOLVER)
+    aprod = Base.Iterators.product(actions...)
+    pprod = vec(prod.(Base.Iterators.product(probs...)))
+
+    m = Model(optimizer)
+    @variable m X[wcc.C]
+    @variable m t[1:length(aprod), wcc.C]
+
+    @objective m Min sum(pprod[i] * t[i,c] for i in eachindex(pprod) for c in wcc.C)
+    @constraint m [s in wcc.S[player]] sum(X[s]) == wcc.b[player, s]
+
+    for (i,xs) in enumerate(aprod)
+        br = ld_f(wcc, xs, player)
+        for c in wcc.C
+            @constraint m t[i,c] >= X[c] - br[c]
+            @constraint m t[i,c] >= -(X[c] - br[c])
+        end
+    end
+
+    optimize!(m)
+
+    collect(value.(X))
+end
+
+function wcc_br(wcc, actions, probs)
+    vals = Tuple(0 for v in wcc.V)
+    resps = Tuple(wcc_brs(wcc, actions, probs, v) for v in wcc.V)
+    
+    vals, resps
 end
 
 function wcc_init(wcc)    
