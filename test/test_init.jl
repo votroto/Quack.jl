@@ -9,9 +9,9 @@ using LinearAlgebra: norm
     variables = ([x],)
     domain = ([(x[1] - ax)^2 ≲ 1],)
 
-    actual_pt, = interior_init(domain; variables)
+    actual_pt = interior_init(domain; variables)
 
-    direction_norm = norm([center] - first(actual_pt))
+    direction_norm = norm([center] - actual_pt[1])
     @test direction_norm <= 1
 end
 
@@ -24,7 +24,7 @@ end
 
     actual_pt = interior_init(domain; variables)
 
-    direction_norm = norm(center - actual_pt[1][1])
+    direction_norm = norm(center - actual_pt[1])
     @test direction_norm <= 1
 end
 
@@ -37,6 +37,6 @@ end
 
     actual_pt = interior_init(domain; variables)
 
-    direction_norm = norm(center - actual_pt[1][1], Inf)
+    direction_norm = norm(center - actual_pt[1], Inf)
     @test direction_norm <= 1
 end

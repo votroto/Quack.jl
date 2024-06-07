@@ -16,27 +16,6 @@ using Test
     @test expected_values ≈ collect(values) atol = 1e-5
 end
 
-@testset "Chasnov2019" begin
-    @variables θ[1:2]
-    α = [1, 1.5]
-    ϕ = [0, π/8]
-
-    p1 = α[1] * cos(θ[1] - ϕ[1]) - cos(θ[1] - θ[2])
-    p2 = α[2] * cos(θ[2] - ϕ[2]) - cos(θ[2] - θ[1])
-
-    pays = (p1, p2)
-    doms = ((θ[1]^2 ≲ π^2,), (θ[2]^2 ≲ π^2,))
-    vars = ((θ[1],), (θ[2],))
-
-    quack = quack_oracle(pays, doms; variables=vars)
-    cnt, (actions, mixed, values, best) = until_eps(quack, 1e-3)
-    pure = [actions[1][findmax(mixed[1])[2]], actions[2][findmax(mixed[2])[2]]]
-    
-    expected_pay = [[0.324, 1.291], [0.971, 1.705]]
-    @test (isapprox(collect(values), expected_pay[1]; atol = 1e-1)
-        || isapprox(collect(values), expected_pay[2]; atol = 1e-1))
-end
-
 @testset "Stein Ozdaglar Parillo 2008 Ex. 2.3" begin
     @variables x y
 

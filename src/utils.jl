@@ -14,6 +14,7 @@ domains_variables(domains) = @show map(player_variables, domains)
 
 function _bug_ncon(gts, args...; kwargs...)
     ts = collect.(gts) # genericity bug in TensorOperations
+    @show gts
     ncon(ts, args...; kwargs...)
 end
 
@@ -36,6 +37,7 @@ function unilateral_payoffs(
     strategies;
     players=eachindex(payoffs)
 ) where {N}
+@show payoffs
     function contract((i, js, np, njs))
         _bug_ncon([payoffs[i], strategies[js]...], [np, njs...])
     end

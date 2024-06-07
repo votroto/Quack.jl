@@ -1,39 +1,53 @@
-using NLPModelsIpopt: ipopt
+using PolyJuMP
+using JuMP
+using Gurobi
 
-import SymNLPModels as NLP
-import Symbolics as Sym
+function _default_optimizer()
+    grb = Gurobi.Optimizer()
+    MOI.set(grb, MOI.RawOptimizerAttribute("Threads"), 1)
+    MOI.set(grb, MOI.RawOptimizerAttribute("OutputFlag"), 0)
+    () -> PolyJuMP.QCQP.Optimizer(grb)
+end
 
 function interior_init(
     domains;
-    variables=domains_variables(domains)
+    variables=domains_variables(domains),
+    optimizer=_default_optimizer()
 )
-    player_vals(sol, vs) = map(v -> NLP.value(sol, v), vs)
-    all_inits(sol) = map(vs -> [player_vals(sol, vs)], variables)
+    players = eachindex(variables)
 
+    m = Model(optimizer)
+    vs = [[@variable(m) for i in eachindex(pv)] for pv in variables]
+
+    varmap = collect(tuplecat(variables...)) .=> vcat(vs...)
     domcat = collect(tuplecat(domains...))
-    varcat = tuplecat(variables...)
-    interior = Sym.Num(sum(_inequality_to_expr.(domcat)))
 
-    model = NLP.SymNLPModel(interior, domcat; variables=varcat)
-    stats = ipopt(model; print_level=0)
+    exs = [Symbolics.substitute(_inequality_to_expr(d), varmap) for d in domcat]
+    interior = sum(exs)
 
-    solution = NLP.parse_solution(model, stats.solution)
-    
-    all_inits(solution)
+    @objective(m, Min, interior)
+    @constraint(m, [e in exs], e <= 0)
+
+    optimize!(m)
+
+    Tuple([value.(vs[p]) for p in players])
 end
 
 function oracle(
     payoff,
     domain;
-    variables=player_variables(domain)
+    variables=player_variables(domain),
+    optimizer=_default_optimizer()
 )
-    model = NLP.SymNLPModel(-payoff, collect(domain); variables=collect(variables))
-    stats = ipopt(model; print_level=0)
+    m = Model(optimizer)
+    @variable(m, vs[i in eachindex(variables)])
 
-    solution = NLP.parse_solution(model, stats.solution)
-    values =  map(v -> NLP.value(solution, v), variables)
+    @objective(m, Max, Symbolics.substitute(payoff, variables .=> vs))
+    @constraint(m, [d in domain], Symbolics.substitute(_inequality_to_expr(d), variables .=> vs) <= 0)
 
-    -stats.objective, Tuple(values)
+    optimize!(m)
+
+    objective_value(m), Tuple(value.(vs))
 end
 
 function oracle(
