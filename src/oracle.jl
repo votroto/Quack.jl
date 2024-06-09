@@ -2,10 +2,17 @@ using PolyJuMP
 using JuMP
 using Gurobi
 
+const GRB_ENV_REF = Ref{Gurobi.Env}()
+
+function __init__()
+    global GRB_ENV_REF
+    GRB_ENV_REF[] = Gurobi.Env()
+end
+
 function _default_optimizer()
-    grb = Gurobi.Optimizer()
-    MOI.set(grb, MOI.RawOptimizerAttribute("Threads"), 1)
+    grb = Gurobi.Optimizer(GRB_ENV_REF[])
     MOI.set(grb, MOI.RawOptimizerAttribute("OutputFlag"), 0)
+    MOI.set(grb, MOI.RawOptimizerAttribute("Threads"), 1)
     () -> PolyJuMP.QCQP.Optimizer(grb)
 end
 

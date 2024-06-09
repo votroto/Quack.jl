@@ -1,5 +1,5 @@
-using TensorOperations: ncon
 import Symbolics as Sym
+using JuMP: NonlinearExpr
 
 max_incentive((_, _, values, best)) = norm(collect(best) - collect(values), Inf)
 
@@ -12,21 +12,6 @@ player_variables(domain) = Tuple(unique(vcat(Symbolics.get_variables.(domain)...
 
 domains_variables(domains) = @show map(player_variables, domains)
 
-function _bug_ncon(gts, args...; kwargs...)
-    ts = collect.(gts) # genericity bug in TensorOperations
-    @show gts
-    ncon(ts, args...; kwargs...)
-end
-
-function _ncon_ids(xs)
-    delete_at(xs, i) = xs[begin:end.!=i]
-    ncon_ids(i) = [(j == i) ? -j : j for j in xs]
-    ncon_js(i) = collect.(delete_at(xs, i))
-    id_not_i(i) = xs[begin:end.!=i]
-
-    [(xs[i], id_not_i(i), ncon_ids(i), ncon_js(i)) for i in eachindex(xs)]
-end
-
 """
 unilateral_payoffs(payoffs::NTuple, strategies, players)
 
@@ -37,11 +22,21 @@ function unilateral_payoffs(
     strategies;
     players=eachindex(payoffs)
 ) where {N}
-@show payoffs
-    function contract((i, js, np, njs))
-        _bug_ncon([payoffs[i], strategies[js]...], [np, njs...])
+    E = [zeros(NonlinearExpr, length(strategies[p])) for p in players]
+    for p in players
+        for i in CartesianIndices(payoffs[p])
+            temp = zero(NonlinearExpr)
+            temp += payoffs[p][i]
+            for z in players
+                if z == p
+                    continue
+                end
+                temp *= strategies[z][i.I[z]]
+            end
+            E[p][i.I[p]] += temp
+        end
     end
-    map(contract, _ncon_ids(players))
+    E
 end
 
 function unilateral_payoffs(
