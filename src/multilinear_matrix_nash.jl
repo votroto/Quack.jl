@@ -26,3 +26,28 @@ function nash_equilibrium(
 
     Tuple(value.(p)), Tuple([value.(xi) for xi in x])
 end
+
+function nash_equilibrium_strumfels(
+    payoffs::NTuple{N,<:AbstractArray{T,N}};
+    optimizer=_default_optimizer()
+) where {T,N}
+    _simplex_var(m, a, p) = @variable(m; lower_bound=0, upper_bound=1, base_name="x[$a,$p]")
+    players = eachindex(payoffs)
+    actions = axes(first(payoffs))
+
+    m = Model(optimizer)
+    x = [[_simplex_var(m, a, i) for a in actions[i]] for i in players]
+    @variable(m, p[players])
+
+    brfs = unilateral_payoffs(payoffs, x)
+    paren = [[p[i] - u for u in brfs[i]] for i in players]
+    sxten = [dot(paren[i], x[i]) for i in players]
+
+    @constraint(m, [i = players], paren[i] .>= 0)
+    @constraint(m, sxten .== 0)
+    @constraint(m, [i = players], sum(x[i]) == 1)
+
+    optimize!(m)
+
+    Tuple(value.(p)), Tuple([value.(xi) for xi in x])
+end

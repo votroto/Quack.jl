@@ -10,7 +10,7 @@ tuplecat(as...) = vcat(collect.(as)...)
 
 player_variables(domain) = Tuple(unique(vcat(Symbolics.get_variables.(domain)...)))
 
-domains_variables(domains) = @show map(player_variables, domains)
+domains_variables(domains) = map(player_variables, domains)
 
 """
 unilateral_payoffs(payoffs::NTuple, strategies, players)

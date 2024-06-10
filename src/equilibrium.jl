@@ -10,5 +10,6 @@ Compute the player equilibrium strategies in a subgame restricted to actions.
 """
 function equilibrium(payoffs, actions)
     subproblem = _subgames(payoffs, actions)
+    #nash_equilibrium_strumfels(subproblem)
     nash_equilibrium(subproblem)
 end

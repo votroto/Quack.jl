@@ -11,7 +11,7 @@ end
 
 function _default_optimizer()
     grb = Gurobi.Optimizer(GRB_ENV_REF[])
-    MOI.set(grb, MOI.RawOptimizerAttribute("OutputFlag"), 0)
+    #MOI.set(grb, MOI.RawOptimizerAttribute("OutputFlag"), 0)
     MOI.set(grb, MOI.RawOptimizerAttribute("Threads"), 1)
     () -> PolyJuMP.QCQP.Optimizer(grb)
 end
