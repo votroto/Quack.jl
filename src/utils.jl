@@ -18,14 +18,15 @@ unilateral_payoffs(payoffs::NTuple, strategies, players)
 Computes the payoffs that each player could get by unilateral deviation.
 """
 function unilateral_payoffs(
+    Z,
     payoffs::NTuple{N,AbstractArray},
     strategies;
     players=eachindex(payoffs)
 ) where {N}
-    E = [zeros(NonlinearExpr, length(strategies[p])) for p in players]
+    E = [zeros(Z, length(strategies[p])) for p in players]
     for p in players
         for i in CartesianIndices(payoffs[p])
-            temp = zero(NonlinearExpr)
+            temp = zero(N)
             temp += payoffs[p][i]
             for z in players
                 if z == p
@@ -39,7 +40,7 @@ function unilateral_payoffs(
     E
 end
 
-function unilateral_payoffs(
+function unilateral_payoffz(
     payoffs,
     pures,
     weights;
@@ -54,8 +55,8 @@ function unilateral_payoffs(
         for others_ids in Iterators.product(ids[others]...)
             weight = prod(weights[o][i] for (o, i) in zip(others, others_ids))
             ps = [pures[o][i] for (o, i) in zip(others, others_ids)]
-            ps, variables[i]
             full = insert_at(ps, variables[i], i)
+            payoffs[i](full...)
             total += weight * payoffs[i](full...)
         end
         Sym.simplify(total; expand=true)

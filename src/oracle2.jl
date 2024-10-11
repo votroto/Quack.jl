@@ -1,9 +1,13 @@
 using PolyJuMP
+using SumOfSquares
 using JuMP
 using Gurobi
 using AmplNLWriter
 using Couenne_jll
 
+using MosekTools
+using DynamicPolynomials
+using SemialgebraicSets
 
 const GRB_ENV_REF = Ref{Gurobi.Env}()
 
@@ -14,11 +18,16 @@ end
 
 function _default_optimizer()
     grb = Gurobi.Optimizer(Gurobi.Env())
-    MOI.set(grb, MOI.RawOptimizerAttribute("OutputFlag"), 0)
+    #MOI.set(grb, MOI.RawOptimizerAttribute("OutputFlag"), 0)
     MOI.set(grb, MOI.RawOptimizerAttribute("Threads"), 1)
     () -> PolyJuMP.QCQP.Optimizer(grb)
 
 #    () -> AmplNLWriter.Optimizer(Couenne_jll.amplexe)
+end
+
+
+function _sos_optimizer()
+    return Mosek.Optimizer
 end
 
 function interior_init(
@@ -93,4 +102,36 @@ function oracle(
     optimize!(m)
 
     objective_value(m), Tuple(value.(vs))
+end
+
+function sos(p, dom, deg, solver)
+    model = SOSModel(solver)
+    #set_silent(model)
+    @variable(model, α)
+    @objective(model, Min, α)
+    @constraint(model, c, p <= α, domain = dom, maxdegree = deg)
+    optimize!(model)
+
+    ν = moment_matrix(c)
+    if result_count(model) >= 1
+        objective_value(model), atomic_measure(ν, 1e-3)
+    end
+end
+
+
+function oracle_(
+    payoff,
+    domain;
+    variables=player_variables(domain),
+    optimizer=_sos_optimizer()
+)
+    @polyvar vs[1:length(variables)]
+
+    ss = [Symbolics.substitute(-_inequality_to_expr(d), variables .=> vs) for d in domain]
+    se = SemialgebraicSets.basic_semialgebraic_set(SemialgebraicSets.FullSpace(), ss)
+    p = Symbolics.substitute(payoff, variables .=> vs)  
+
+    m, meas = sos(p, se, 8, optimizer)
+
+    m, Tuple(first(meas.atoms).center)
 end

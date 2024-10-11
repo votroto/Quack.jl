@@ -2,7 +2,6 @@ import Base: iterate, IteratorSize, IsInfinite
 using LinearAlgebra
 using Base.Iterators: dropwhile, flatten, take, drop
 
-
 dropwhile_enumerate(pred, itr) = dropwhile(x -> pred(x[2]), enumerate(itr))
 
 until_eps(xs, gap) = first(dropwhile_enumerate(x -> max_incentive(x) > gap, xs))
@@ -18,10 +17,10 @@ end
 IteratorSize(::Type{QuackIterable}) = IsInfinite()
 
 function quack_oracle(
-    payoffs::NTuple{N},
-    domains::NTuple{N};
-    variables::NTuple{N}=domains_variables(domains),
-    start::NTuple{N}=interior_init(domains)
+    payoffs,
+    domains;
+    variables=domains_variables(domains),
+    start=interior_init(domains)
 ) where N
     callables = map(p -> _compile_sym(p, variables), payoffs)
     QuackIterable(callables, domains, variables, start)
