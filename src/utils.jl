@@ -26,8 +26,7 @@ function unilateral_payoffs(
     E = [zeros(Z, length(strategies[p])) for p in players]
     for p in players
         for i in CartesianIndices(payoffs[p])
-            temp = zero(N)
-            temp += payoffs[p][i]
+            temp = payoffs[p][i]
             for z in players
                 if z == p
                     continue
@@ -40,7 +39,7 @@ function unilateral_payoffs(
     E
 end
 
-function unilateral_payoffz(
+function unilateral_payoffs_continuous(
     payoffs,
     pures,
     weights;
@@ -48,16 +47,14 @@ function unilateral_payoffz(
     players=eachindex(payoffs)
 )
     insert_at(xs, y, i) = [xs[1:i-1]; [y]; xs[i:end]]
-    ids = map(eachindex, weights)
     function deviation_i(i)
+        npures = ntuple(j -> (j==i) ? [variables[i]] : pures[j], length(pures))
+        nweights = ntuple(j -> (j == i) ? [1] : weights[j], length(weights))
         total = 0
-        others = players[begin:end.!=i]
-        for others_ids in Iterators.product(ids[others]...)
-            weight = prod(weights[o][i] for (o, i) in zip(others, others_ids))
-            ps = [pures[o][i] for (o, i) in zip(others, others_ids)]
-            full = insert_at(ps, variables[i], i)
-            payoffs[i](full...)
-            total += weight * payoffs[i](full...)
+        for j in Iterators.product(map(eachindex, weights)...)
+            weight = prod(nweights[p][k] for (p, k) in enumerate(j))
+            vs = ntuple(p -> npures[p][j[p]], length(players))
+            total += weight * payoffs[i](vs...)
         end
         Sym.simplify(total; expand=true)
     end

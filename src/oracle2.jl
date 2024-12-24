@@ -78,7 +78,7 @@ function oracle(
     variables=player_variables.(domains)
 )
     players = eachindex(variables)
-    unilateral = unilateral_payoffz(payoffs, actions, weights; variables)
+    unilateral = unilateral_payoffs_continuous(payoffs, actions, weights; variables)
     improved = [
         oracle(unilateral[i], domains[i]; variables=variables[i])
         for i in players
@@ -129,7 +129,7 @@ function oracle_(
 
     ss = [Symbolics.substitute(-_inequality_to_expr(d), variables .=> vs) for d in domain]
     se = SemialgebraicSets.basic_semialgebraic_set(SemialgebraicSets.FullSpace(), ss)
-    p = Symbolics.substitute(payoff, variables .=> vs)  
+    p = Symbolics.substitute(payoff, variables .=> vs)
 
     m, meas = sos(p, se, 8, optimizer)
 

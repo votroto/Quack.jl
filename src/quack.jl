@@ -7,23 +7,22 @@ dropwhile_enumerate(pred, itr) = dropwhile(x -> pred(x[2]), enumerate(itr))
 until_eps(xs, gap) = first(dropwhile_enumerate(x -> max_incentive(x) > gap, xs))
 fixed_iters(d, i) = first(drop(d, i))
 
-struct QuackIterable{P,D,V,I}
-    payoffs::P
-    domains::D
-    variables::V
+struct QuackIterable{N,P,D,V,I}
+    payoffs::NTuple{N,P}
+    domains::NTuple{N,D}
+    variables::NTuple{N,V}
     start::I
 end
 
 IteratorSize(::Type{QuackIterable}) = IsInfinite()
 
 function quack_oracle(
-    payoffs,
-    domains;
-    variables=domains_variables(domains),
+    payoffs::NTuple{N},
+    domains::NTuple{N},
+    variables::NTuple{N},
     start=interior_init(domains)
-) where N
-    callables = map(p -> _compile_sym(p, variables), payoffs)
-    QuackIterable(callables, domains, variables, start)
+) where {N}
+    QuackIterable(payoffs, domains, variables, start)
 end
 
 function iterate(mo::QuackIterable, actions=mo.start)

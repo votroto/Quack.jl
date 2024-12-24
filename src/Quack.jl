@@ -7,7 +7,7 @@ include("utils.jl")
 include("symbolics_utils.jl")
 include("iterable.jl")
 include("oracle.jl")
-include("master.jl")
+include("equilibrium_impl.jl")
 include("equilibrium.jl")
 
 end
