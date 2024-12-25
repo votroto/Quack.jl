@@ -36,11 +36,11 @@ function unilateral_payoffs_continuous(
 end
 
 
-"""Adds a column to a matrix if it does not exist already"""
-function uniqpush(xs, y; atol=1e-8)
-    if !any(x -> isapprox(collect(y), collect(x); atol), xs)
-        [xs; y]
-    else
+"""TODO: FIX! No way to know the eps set by user"""
+function epspush(xs, y, val, best; eps=1e-6)
+    if best - val <= eps
         xs
+    else
+        [xs; y]
     end
 end
