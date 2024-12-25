@@ -1,20 +1,9 @@
 name = "Quack"
 uuid = "e13256e9-5c5d-4f21-8ec4-a2cc72ac633f"
 authors = ["Tomas Votroubek <tomas.votroubek@outlook.com>"]
-version = "0.3.0"
+version = "0.4.0"
 
 [deps]
-AmplNLWriter = "7c4d4715-977e-5154-bfe0-e096adeac482"
-Couenne_jll = "f09e9e23-9010-5c9e-b679-9f1d8f79b85c"
-DynamicPolynomials = "7c1d4256-1411-5781-91ec-d7bc3513ac07"
 Gurobi = "2e9cd046-0924-5485-92f1-d5272153d98b"
 JuMP = "4076af6c-e467-56ae-b986-b466b2749572"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
-MosekTools = "1ec41992-ff65-5c91-ac43-2df89e9693a4"
-NaNMath = "77ba4419-2d1f-58cd-9bb1-8ffee604a2e3"
-PolyJuMP = "ddf597a6-d67e-5340-b84c-e37d84115374"
-SemialgebraicSets = "8e049039-38e8-557d-ae3a-bc521ccf6204"
-SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
-SumOfSquares = "4b9e565b-77fc-50a5-a571-1244f986bda1"
-Symbolics = "0c5d862f-8b57-4792-8d23-62f2024744c7"
-TensorOperations = "6aa20fa7-93e2-5fca-9bc0-fbd0db3c71a2"

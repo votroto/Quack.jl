@@ -1,11 +1,10 @@
 module Quack
 
-export quack_oracle, interior_init, oracle
+export quack_oracle, feasible_init, oracle
 export until_eps, fixed_iters
 
 include("utils.jl")
-include("symbolics_utils.jl")
-include("iterable.jl")
+include("quack.jl")
 include("oracle.jl")
 include("equilibrium_impl.jl")
 include("equilibrium.jl")

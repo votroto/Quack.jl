@@ -1,96 +1,51 @@
-using PolyJuMP
 using JuMP
 using Gurobi
-using AmplNLWriter
-using Couenne_jll
 
 
-const GRB_ENV_REF = Ref{Gurobi.Env}()
-
-function __init__()
-    global GRB_ENV_REF
-    GRB_ENV_REF[] = Gurobi.Env()
-end
-
-function _default_optimizer()
-    grb = Gurobi.Optimizer(Gurobi.Env())
-    MOI.set(grb, MOI.RawOptimizerAttribute("OutputFlag"), 0)
-    MOI.set(grb, MOI.RawOptimizerAttribute("Threads"), 1)
-    () -> PolyJuMP.QCQP.Optimizer(grb)
-
-#    () -> AmplNLWriter.Optimizer(Couenne_jll.amplexe)
-end
-
-function interior_init(
-    domains;
-    variables=domains_variables(domains),
-    optimizer=_default_optimizer()
-)
-    players = eachindex(variables)
+function feasible_init(
+    domains::NTuple{N,Function};
+    optimizer=_silent_optimizer()
+) where {N}
+    players = eachindex(domains)
 
     m = Model(optimizer)
-
-    vs = [[@variable(m) for i in eachindex(pv)] for pv in variables]
-
-    varmap = collect(tuplecat(variables...)) .=> vcat(vs...)
-    domcat = collect(tuplecat(domains...))
-
-    exs = [Symbolics.substitute(_inequality_to_expr(d), varmap) for d in domcat]
-    interior = sum(exs)
-
-    @objective(m, Min, interior)
-    @constraint(m, [e in exs], e <= 0)
+    @variable(m, x[i in players])
+    @constraint(m, [i in players], domains[i](x[i]) >= 0)
 
     optimize!(m)
-    ntuple(p -> [Tuple(value.(vs[p]))], length(players))
+
+    ntuple(i -> [value(x[i])], N)
 end
 
-function wasserstein(supp, supq, p, q; optimizer=_default_optimizer())
-    rho(x, y) = norm(collect(supp[x]) - collect(supq[y]))
-    idsp = eachindex(supp)
-    idsq = eachindex(supq)
-
-    m = Model(optimizer)
-    @variable(m, mu[idsp, idsq] >= 0)
-    @constraint(m, sum(mu) == 1)
-    @constraint(m, [x in idsp], sum(mu[x, :]) == p[x])
-    @constraint(m, [y in idsq], sum(mu[:, y]) == q[y])
-    @objective(m, Min, sum(mu[x, y] * rho(x, y) for x in idsp, y in idsq))
-    optimize!(m)
-
-    objective_value(m)
-end
 
 function oracle(
-    payoffs,
-    domains,
-    actions,
-    weights;
-    variables=player_variables.(domains)
-)
-    players = eachindex(variables)
-    unilateral = unilateral_payoffz(payoffs, actions, weights; variables)
-    improved = [
-        oracle(unilateral[i], domains[i]; variables=variables[i])
-        for i in players
-    ]
-    as, bs = unzip(improved)
-    Tuple(as), Tuple(bs)
+    payoffs::NTuple{N,Function},
+    domains::NTuple{N,Function},
+    actions::NTuple{N},
+    weights::NTuple{N}
+) where {N}
+    unilateral = unilateral_payoffs_continuous(payoffs, actions, weights)
+    improved = ntuple(i -> best_response(unilateral[i], domains[i]), N)
+
+    maxes = ntuple(i -> improved[i][1], N)
+    acts = ntuple(i -> improved[i][2], N)
+
+    maxes, acts
 end
 
-function oracle(
+
+function best_response(
     payoff,
     domain;
-    variables=player_variables(domain),
-    optimizer=_default_optimizer()
+    optimizer=_silent_optimizer()
 )
     m = Model(optimizer)
-    @variable(m, vs[i in eachindex(variables)])
+    @variable(m, x)
 
-    @objective(m, Max, Symbolics.substitute(payoff, variables .=> vs))
-    @constraint(m, [d in domain], Symbolics.substitute(_inequality_to_expr(d), variables .=> vs) <= 0)
+    @objective(m, Max, payoff(x))
+    @constraint(m, domain(x) >= 0)
 
     optimize!(m)
 
-    objective_value(m), Tuple(value.(vs))
+    objective_value(m), value(x)
 end

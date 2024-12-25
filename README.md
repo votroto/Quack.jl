@@ -1,22 +1,22 @@
 # Quack
 
-Multiple Oracle algorithm without the oracles (this is silly and **unstable**).
+Multiple Oracle algorithm for general-sum multiplayer continuous games.
+The API is **not stable** yet!
+
 
 ## Example Torus Game (Chasnov 2019)
 
-Running a fixed number of iterations on a two-player game with agents’ joint strategy space on a torus. The game has two pure equilibria at (-1.063, 1.014) and (1.408, -0.325).
+Find an eps-equilibrium of a two-player general-sum game where the agents’ joint strategy space is a torus. The game has two pure equilibria at (-1.063, 1.014) and (1.408, -0.325).
 ```julia
-@variables θ[1:2]
-α = [1, 1.5]
-ϕ = [0, π/8]
+phi = (0, π/8)
+alp = (1, 1.5)
 
-p1 = α[1] * cos(θ[1] - ϕ[1]) - cos(θ[1] - θ[2])
-p2 = α[2] * cos(θ[2] - ϕ[2]) - cos(θ[2] - θ[1])
+p1(x, y) = alp[1] * cos(x − phi[1]) - cos(x - y)
+p2(x, y) = alp[2] * cos(y − phi[2]) - cos(y - x)
 
-pays = (p1, p2)
-doms = ((θ[1]^2 ≲ π^2,), (θ[2]^2 ≲ π^2,))
-vars = ((θ[1],), (θ[2],))
+dom1(x) = -x^2 + π^2
+dom2(y) = -y^2 + π^2
 
-quack = quack_oracle(pays, doms; variables=vars)
-(pure, prob, values, best) = fixed_iters(quack, 5)
+quack = quack_oracle((p1, p2), (dom1, dom2))
+iters, (actions, weights, vals, subopt) = until_eps(quack, 1e-3)
 ```

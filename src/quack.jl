@@ -4,32 +4,30 @@ using Base.Iterators: dropwhile, flatten, take, drop
 
 dropwhile_enumerate(pred, itr) = dropwhile(x -> pred(x[2]), enumerate(itr))
 
-until_eps(xs, gap) = first(dropwhile_enumerate(x -> max_incentive(x) > gap, xs))
+until_eps(xs, gap) = first(dropwhile_enumerate(x -> max_incentive(x...) > gap, xs))
 fixed_iters(d, i) = first(drop(d, i))
 
-struct QuackIterable{N,P,D,V,I}
-    payoffs::NTuple{N,P}
-    domains::NTuple{N,D}
-    variables::NTuple{N,V}
+struct QuackIterable{N,I}
+    payoffs::NTuple{N,Function}
+    domains::NTuple{N,Function}
     start::I
 end
 
 IteratorSize(::Type{QuackIterable}) = IsInfinite()
 
 function quack_oracle(
-    payoffs::NTuple{N},
-    domains::NTuple{N},
-    variables::NTuple{N},
-    start=interior_init(domains)
+    payoffs::NTuple{N,Function},
+    domains::NTuple{N,Function},
+    start=feasible_init(domains)
 ) where {N}
-    QuackIterable(payoffs, domains, variables, start)
+    QuackIterable(payoffs, domains, start)
 end
 
 function iterate(mo::QuackIterable, actions=mo.start)
-    payoffs, domains, variables = mo.payoffs, mo.domains, mo.variables
+    payoffs, domains = mo.payoffs, mo.domains
 
     values, mixed = equilibrium(payoffs, actions)
-    best, responses = oracle(payoffs, domains, actions, mixed; variables)
+    best, responses = oracle(payoffs, domains, actions, mixed)
     extended = uniqpush.(actions, responses)
 
     (actions, mixed, values, best), extended
