@@ -11,28 +11,24 @@ end
 
 
 function unilateral_payoffs_continuous(
-    payoffs::NTuple{N, Function},
+    payoffs::NTuple{N,Function},
     actions::NTuple{N},
     weights::NTuple{N};
     players=eachindex(payoffs)
 ) where {N}
-    insert_at(xs, y, i) = [xs[1:i-1]; [y]; xs[i:end]]
-    ids = map(eachindex, weights)
-    function deviation(i)
-        function zz(x)
-            total = 0
-            others = players[begin:end.!=i]
-            for others_ids in Iterators.product(ids[others]...)
-                weight = prod(weights[o][i] for (o, i) in zip(others, others_ids))
-                ps = [actions[o][i] for (o, i) in zip(others, others_ids)]
-                full = insert_at(ps, x, i)
-                total += weight * payoffs[i](full...)
-            end
-            total
+    function deviation(i, x)
+        part_weights = ntuple(j -> (j == i) ? [1] : weights[j], N)
+        part_actions = ntuple(j -> (j == i) ? [x] : actions[j], N)
+        prod_actions = Iterators.product(part_actions...)
+        prod_weights = Iterators.product(part_weights...)
+        total = 0
+        for (a, w) in zip(prod_actions, prod_weights)
+            total += prod(w) * payoffs[i](a...)
         end
+        total
     end
 
-    ntuple(i -> deviation(i), N)
+    ntuple(i -> x -> deviation(i, x), N)
 end
 
 
