@@ -1,6 +1,7 @@
 const GRB_ENV_REF = Ref{Gurobi.Env}()
 
 function __init__()
+    # Reuse environment between solves
     global GRB_ENV_REF
     GRB_ENV_REF[] = Gurobi.Env()
     return
@@ -8,8 +9,6 @@ end
 
 
 _default_optimizer() = Gurobi.Optimizer(GRB_ENV_REF[])
-
-_silent_optimizer() = optimizer_with_attributes(_default_optimizer, MOI.Silent() => true)
 
 
 """
@@ -20,7 +19,7 @@ corresponding strategies.
 """
 function nash_equilibrium(
     payoffs::NTuple{N,AbstractArray{T,N}};
-    optimizer=_silent_optimizer()
+    optimizer=_default_optimizer
 ) where {T,N}
     _simplex_var(N) = @variable(m; lower_bound=0, upper_bound=1, start=1 / N)
 

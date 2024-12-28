@@ -4,7 +4,7 @@ using Gurobi
 
 function feasible_init(
     domains::NTuple{N,Function};
-    optimizer=_silent_optimizer()
+    optimizer=_default_optimizer
 ) where {N}
     players = eachindex(domains)
 
@@ -37,7 +37,7 @@ end
 function best_response(
     payoff,
     domain;
-    optimizer=_silent_optimizer()
+    optimizer=_default_optimizer
 )
     m = Model(optimizer)
     @variable(m, x)

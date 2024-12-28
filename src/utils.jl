@@ -13,19 +13,15 @@ end
 function unilateral_payoffs_continuous(
     payoffs::NTuple{N,Function},
     actions::NTuple{N},
-    weights::NTuple{N};
-    players=eachindex(payoffs)
+    weights::NTuple{N}
 ) where {N}
     function deviation(i, x)
+        weval(w, a) = prod(w) * payoffs[i](a...)
         part_weights = ntuple(j -> (j == i) ? [1] : weights[j], N)
         part_actions = ntuple(j -> (j == i) ? [x] : actions[j], N)
         prod_actions = Iterators.product(part_actions...)
         prod_weights = Iterators.product(part_weights...)
-        total = 0
-        for (a, w) in zip(prod_actions, prod_weights)
-            total += prod(w) * payoffs[i](a...)
-        end
-        total
+        mapreduce(weval, +, prod_weights, prod_actions)
     end
 
     ntuple(i -> x -> deviation(i, x), N)
