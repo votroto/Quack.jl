@@ -17,14 +17,15 @@ _default_optimizer() = Gurobi.Optimizer(GRB_ENV_REF[])
 Finds a nash equilibrium of a strategic game. Returns the payoffs and the
 corresponding strategies.
 """
-function nash_equilibrium(
-    payoffs::NTuple{N,AbstractArray{T,N}};
+function subgame_equilibrium(
+    payoffs::NTuple{N, Function},
+    actions::NTuple{N};
     optimizer=_default_optimizer
-) where {T,N}
+) where {N}
     _simplex_var(N) = @variable(m; lower_bound=0, upper_bound=1, start=1 / N)
 
     players = eachindex(payoffs)
-    actions = axes(first(payoffs))
+    actions = eachindex.(actions)
 
     m = Model(optimizer)
 
@@ -34,7 +35,7 @@ function nash_equilibrium(
     @variable(m, w[i=players], lower_bound = pay_lb[i], upper_bound = pay_ub[i])
 
     brfs = ntuple(i -> zeros(NonlinearExpr, actions[i]), N)
-    unilateral_payoffs!(brfs, payoffs, x)
+    unilateral_payoffs!(brfs, payoffs, actions, x)
 
     sum_payoff = sum(brfs[i][a] * x[i][a] for i in players for a in actions[i])
     @constraint(m, [i = players], brfs[i] .<= w[i])

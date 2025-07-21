@@ -7,29 +7,20 @@ Computes the payoffs that each player could get by unilateral deviation.
 """
 function unilateral_payoffs!(
     result::NTuple{N},
-    payoffs::NTuple{N},
+    payoffs::NTuple{N, Function},
+    actions::NTuple{N},
     strategies::NTuple{N};
     players=eachindex(payoffs)
 ) where {N}
+    evalpi(p,i) = payoffs[p](getindex.(s.actions, i.I)...)
     for p in players
-        for i in CartesianIndices(payoffs[p])
-            temp = payoffs[p][i]
-            for z in players
-                if z == p
-                    continue
-                end
-                temp *= strategies[z][i.I[z]]
-            end
-            result[p][i.I[p]] += temp
+        for i in CartesianIndices(length.(s.actions))
+            w = prod(strategies[z][i.I[z]] for z in players if z != p)
+            result[p][i.I[p]] += w * evalipi(payoffs, p, i)
         end
     end
     result
 end
-
-
-_subgame(payoff, actions) = map(a -> payoff(a...), product(actions...))
-_subgames(payoffs, actions) = map(p -> _subgame(p, actions), payoffs)
-
 
 """
     equilibrium(payoffs, actions)
@@ -37,6 +28,5 @@ _subgames(payoffs, actions) = map(p -> _subgame(p, actions), payoffs)
 Compute the player equilibrium strategies in a subgame restricted to actions.
 """
 function equilibrium(payoffs, actions)
-    subproblem = _subgames(payoffs, actions)
-    nash_equilibrium(subproblem)
+    subgame_equilibrium(payoffs, actions)
 end
