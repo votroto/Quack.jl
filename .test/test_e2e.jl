@@ -14,6 +14,7 @@ expected_values = [1, -1]
 @assert expected_values ≈ collect(vals) atol = 1e-3
 
 
+
 p1(x, y) = -3 * x^2 * y^2 - 2 * x^3 + 3 * y^3 + 2 * x * y - x
 p2(x, y) = 2 * x^2 * y^2 + x^2 * y − 4 * y^3 − x^2 + 4 * y
 

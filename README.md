@@ -6,7 +6,7 @@ The API is **not stable** yet!
 
 ## Example Torus Game (Chasnov 2019)
 
-Find an eps-equilibrium of a two-player general-sum game where the agents’ joint strategy space is a torus. The game has two pure equilibria at (-1.063, 1.014) and (1.408, -0.325).
+Find an eps-equilibrium of a two-player general-sum game where the agents’ joint strategy space is a torus. The game has two pure equilibria at $(-1.063, 1.014)$ and $(1.408, -0.325)$.
 ```julia
 phi = (0, π/8)
 alp = (1, 1.5)

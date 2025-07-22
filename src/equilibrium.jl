@@ -12,11 +12,12 @@ function unilateral_payoffs!(
     strategies::NTuple{N};
     players=eachindex(payoffs)
 ) where {N}
-    evalpi(p,i) = payoffs[p](getindex.(s.actions, i.I)...)
+    evalpi(p,i) = payoffs[p](getindex.(actions, i)...)
+
     for p in players
-        for i in CartesianIndices(length.(s.actions))
-            w = prod(strategies[z][i.I[z]] for z in players if z != p)
-            result[p][i.I[p]] += w * evalipi(payoffs, p, i)
+        for i in Iterators.product(eachindex.(actions)...)
+            w = prod(strategies[z][i[z]] for z in players if z != p)
+            result[p][i[p]] += w * evalpi(p, i)
         end
     end
     result
