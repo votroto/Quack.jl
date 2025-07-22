@@ -19,24 +19,24 @@ corresponding strategies.
 """
 function subgame_equilibrium(
     payoffs::NTuple{N, Function},
-    actionz::NTuple{N};
+    actions::NTuple{N};
     optimizer=_default_optimizer
 ) where {N}
     _simplex_var(i,a) = @variable(m; base_name="x[$i,$a]", lower_bound=0, upper_bound=1)
 
     players = eachindex(payoffs)
-    actions = eachindex.(actionz)
+    act_ids = eachindex.(actions)
 
     m = Model(optimizer)
 
-    x = ntuple(i -> [_simplex_var(i,a) for a in actions[i]], N)
+    x = ntuple(i -> [_simplex_var(i,a) for a in act_ids[i]], N)
     @variable(m, w[i=players])
 
-    brfs = ntuple(i -> zeros(NonlinearExpr, actions[i]), N)
-    unilateral_payoffs!(brfs, payoffs, actionz, x)
+    brfs = ntuple(i -> zeros(NonlinearExpr, act_ids[i]), N)
+    unilateral_payoffs!(brfs, payoffs, actions, x)
 
 
-    sum_payoff = sum(brfs[i][a] * x[i][a] for i in players for a in actions[i])
+    sum_payoff = sum(brfs[i][a] * x[i][a] for i in players for a in act_ids[i])
     @constraint(m, [i = players], brfs[i] .<= w[i])
     @constraint(m, sum_payoff >= sum(w))
     @constraint(m, [i = players], sum(x[i]) == 1)
