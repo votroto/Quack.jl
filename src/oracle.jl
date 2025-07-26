@@ -2,30 +2,52 @@ using JuMP
 using Gurobi
 
 
-function feasible_init(
-    domains::NTuple{N,Function};
+function feasible_init_one(
+    dom_nneg::Function,
+    dom_null::Function,
+    dim::Int;
     optimizer=_default_optimizer
-) where {N}
-    players = eachindex(domains)
-
+)
     m = Model(optimizer)
-    @variable(m, x[i in players])
-    @constraint(m, [i in players], domains[i](x[i]) >= 0)
+    @variable(m, x[1:dim])
+    @constraint(m, dom_nneg(x) .>= 0)
+    @constraint(m, dom_null(x) .== 0)
 
     optimize!(m)
 
-    ntuple(i -> [value(x[i])], N)
+    [tuple(value.(x)...)]
 end
 
+function feasible_init(
+    dom_nneg::NTuple{N,Function},
+    dom_null::NTuple{N,Function},
+    dims::NTuple{N,Int}
+) where {N}
+    ntuple(i -> feasible_init_one(dom_nneg[i], dom_null[i], dims[i]), N)
+end
+
+function feasible_oracle_init(
+    payoffs::NTuple{N,Function},
+    dom_nneg::NTuple{N,Function},
+    dom_null::NTuple{N,Function},
+    dims::NTuple{N,Int}
+) where {N}
+    feasible = feasible_init(dom_nneg, dom_null, dims)
+    weights = ntuple(i -> [1], N)
+    _, responses = oracle(payoffs, dom_nneg, dom_null, feasible, weights)
+
+    ntuple(i -> [responses[i]], N)
+end
 
 function oracle(
     payoffs::NTuple{N,Function},
-    domains::NTuple{N,Function},
+    dom_nneg::NTuple{N,Function},
+    dom_null::NTuple{N,Function},
     actions::NTuple{N},
     weights::NTuple{N}
 ) where {N}
-    unilateral = unilateral_payoffs_continuous(payoffs, actions, weights)
-    improved = ntuple(i -> best_response(unilateral[i], domains[i]), N)
+    slice = unilateral_payoffs_continuous(payoffs, actions, weights)
+    improved = ntuple(i -> best_response(slice[i], dom_nneg[i], dom_null[i], last(actions[i])), N)
 
     maxes = ntuple(i -> improved[i][1], N)
     acts = ntuple(i -> improved[i][2], N)
@@ -33,19 +55,22 @@ function oracle(
     maxes, acts
 end
 
-
 function best_response(
-    payoff,
-    domain;
+    payoff::Function,
+    dom_nneg::Function,
+    dom_null::Function,
+    start;
+    dim=length(start),
     optimizer=_default_optimizer
 )
     m = Model(optimizer)
-    @variable(m, x)
-
+    @variable(m, x[1:dim])
+    @constraint(m, dom_nneg(x) .>= 0)
+    @constraint(m, dom_null(x) .== 0)
     @objective(m, Max, payoff(x))
-    @constraint(m, domain(x) >= 0)
 
+    set_start_value.(x, start)
     optimize!(m)
 
-    objective_value(m), value(x)
+    objective_value(m), tuple(value.(x)...)
 end

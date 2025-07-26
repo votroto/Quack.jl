@@ -9,7 +9,9 @@ fixed_iters(d, i) = first(drop(d, i))
 
 struct QuackIterable{N,I}
     payoffs::NTuple{N,Function}
-    domains::NTuple{N,Function}
+    dom_nneg::NTuple{N,Function}
+    dom_null::NTuple{N,Function}
+    dims::NTuple{N,Int}
     start::I
 end
 
@@ -17,18 +19,19 @@ IteratorSize(::Type{QuackIterable}) = IsInfinite()
 
 function quack_oracle(
     payoffs::NTuple{N,Function},
-    domains::NTuple{N,Function},
-    start=feasible_init(domains)
+    dom_nneg::NTuple{N,Function},
+    dom_null::NTuple{N,Function},
+    dims::NTuple{N,Int};
+    start=feasible_oracle_init(payoffs, dom_nneg, dom_null, dims)
 ) where {N}
-    QuackIterable(payoffs, domains, start)
+    QuackIterable(payoffs, dom_nneg, dom_null, dims, start)
 end
 
 function iterate(mo::QuackIterable, actions=mo.start)
-    payoffs, domains = mo.payoffs, mo.domains
-
+    payoffs, dom_nneg, dom_null = mo.payoffs, mo.dom_nneg, mo.dom_null
 
     values, mixed = equilibrium(payoffs, actions)
-    best, responses = oracle(payoffs, domains, actions, mixed)
+    best, responses = oracle(payoffs, dom_nneg, dom_null, actions, mixed)
     extended = epspush.(actions, responses, values, best)
 
     (actions, mixed, values, best), extended

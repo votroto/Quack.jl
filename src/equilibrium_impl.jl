@@ -35,6 +35,11 @@ function subgame_equilibrium(
     brfs = ntuple(i -> zeros(NonlinearExpr, act_ids[i]), N)
     unilateral_payoffs!(brfs, payoffs, actions, x)
 
+    #@show actions
+    #for p in players
+    #    println()
+    #    println.(brfs[p])
+    #end
 
     sum_payoff = sum(brfs[i][a] * x[i][a] for i in players for a in act_ids[i])
     @constraint(m, [i = players], brfs[i] .<= w[i])
