@@ -5,6 +5,8 @@ using Revise
 # https://doi.org/10.1007/s00182-008-0129-2
 # Stein, N.D., Ozdaglar, A. & Parrilo, P.A.
 
+# Non-zero-sum multiplayer polynomial separable games on [-1,1]
+
 function ex_stein08_2_3()
     # mixed NE
     # (-1.0,), 55.32 %; (0.1149,), 44.68 %;
