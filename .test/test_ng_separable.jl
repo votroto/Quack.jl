@@ -13,6 +13,43 @@ function prettyprints(actss, wghtss)
     end
 end
 
+
+
+function saddle(f, x, y; ε=1e-4)
+    N = length(x)
+    M = length(y)
+    A = Matrix{Float64}(I, N, N)
+
+    ff = f(x, y)
+
+    slopesx = []
+    for i in 1:N
+        x_forward = x .+ ε .* A[:, i]
+        x_backward = x .- ε .* A[:, i]
+        f_forward = f(x_forward, y)
+        f_backward = f(x_backward, y)
+        slopel = (f_forward - ff) / (ε)
+        sloper = (f_backward - ff) / (ε)
+        push!(slopesx, slopel)
+        push!(slopesx, sloper)
+    end
+
+    A = Matrix{Float64}(I, M, M)
+    slopesy = []
+    for i in 1:M
+        y_forward = y .+ ε .* A[:, i]
+        y_backward = y .- ε .* A[:, i]
+        f_forward = f(x, y_forward)
+        f_backward = f(x, y_backward)
+        slopel = (f_forward - ff) / (ε)
+        sloper = (f_backward - ff) / (ε)
+        push!(slopesy, slopel)
+        push!(slopesy, sloper)
+    end
+
+    return slopesx, slopesy
+end
+
 ball(x) = -x^2 + 1
 
 #u1(x, y, z) = −2*x*y^2 + 5*x*y − y −2*x^2 − 4*x*z − 2*z

@@ -19,7 +19,7 @@ corresponding strategies.
 """
 function subgame_equilibrium(
     payoffs::NTuple{N, Function},
-    actions::NTuple{N};
+    actions::NTuple{N, AbstractVector};
     optimizer=_default_optimizer
 ) where {N}
     _simplex_var(i,a) = @variable(m; base_name="x[$i,$a]", lower_bound=0, upper_bound=1)

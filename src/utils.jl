@@ -12,7 +12,7 @@ end
 
 function unilateral_payoffs_continuous(
     payoffs::NTuple{N,Function},
-    actions::NTuple{N},
+    actions::NTuple{N, AbstractVector},
     weights::NTuple{N}
 ) where {N}
     function deviation(i, x)

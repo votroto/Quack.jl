@@ -8,7 +8,7 @@ Computes the payoffs that each player could get by unilateral deviation.
 function unilateral_payoffs!(
     result::NTuple{N},
     payoffs::NTuple{N, Function},
-    actions::NTuple{N},
+    actions::NTuple{N, AbstractVector},
     strategies::NTuple{N};
     players=eachindex(payoffs)
 ) where {N}

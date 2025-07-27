@@ -43,7 +43,7 @@ function oracle(
     payoffs::NTuple{N,Function},
     dom_nneg::NTuple{N,Function},
     dom_null::NTuple{N,Function},
-    actions::NTuple{N},
+    actions::NTuple{N, AbstractVector},
     weights::NTuple{N}
 ) where {N}
     slice = unilateral_payoffs_continuous(payoffs, actions, weights)

@@ -180,6 +180,53 @@ function ex_nie21_6_6()
     (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (3, 3)
 end
 
+function ex_nie21_6_7()
+    # Example 6.7
+    # saddle points
+    # x∗ = (1.5075, 0.5337, 0.0000, 0.5018), y∗ = (2.4143, 1.1463, 0.0000, 0.0000).
+
+    # unbounded
+
+    dom_nneg(v) = (v[1], v[2], v[3], v[4], 1 - v[1], 1 - v[2], 1 - v[3], 1 - v[4])
+    dom_null(v) = 0
+
+    u1(x, y) = -(y[1] * (x[2] + x[3] + x[4] − 1)^2 + y[2] * (x[1] + x[3] + x[4] − 2)^2 + y[3] * (x[1] + x[2] + x[4] − 3)^2 − y[4] * (x[1] + x[2] + x[3] − 4)^2 − (x[1] * (y[2] + y[3] + y[4] − 1)^2 + x[2] * (y[1] + y[3] + y[4] − 2)^2 − x[3] * (y[1] + y[2] + y[4] − 3)^2 + x[4] * (y[1] + y[2] + y[3] − 4)^2))
+    u2(x, y) = -u1(x, y)
+
+    (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (4, 4)
+end
+
+function ex_nie21_6_8()
+    # saddle points
+    # x∗ = −(0.6981, 0.6981, 0.6981), y∗ = (0.4979, 0.4979, 0.4979)
+
+    # unbounded
+
+    dom_nneg(v) = 1
+    dom_null(v) = 0
+
+    u1(x, y) = -(sum(x[i]^4 - y[i]^4 + x[i] + y[i] for i in 1:3) + sum(x[i]^3 * y[j]^3 for i in 1:3, j in 1:3 if i != j))
+    u2(x, y) = -u1(x, y)
+
+    (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (3, 3)
+end
+
+function ex_nie21_6_9()
+    # saddle points
+    # x∗ = (1.2599, 1.2181, 1.3032), y∗ = (1.0000, 1.1067, 0.9036)
+
+    # unbounded
+
+    dom_nneg(v) =  (v[1], v[1] * v[2] - 1, v[2] * v[3] - 1)
+    dom_null(v) = 0
+
+    u1(x, y) = -(x[1]^3*y[1] + x[2]^3*y[2] + x[3]^3*y[3] - 3*x[1]*x[2]*x[3] - y[1]^2 - 2*y[2]^2 - 3*y[3]^2)
+    u2(x, y) = -u1(x, y)
+
+    (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (3, 3)
+end
+
+
 function ex_nie21_6_10()
     # Example 6.10
     # two Nash equilibria
@@ -199,24 +246,8 @@ function ex_nie21_6_10()
     (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (5, 5)
 end
 
-#=
-function _NOT_COMPACT_ex_nie21_6_7()
-    # Example 6.7
-    # saddle points
-    # x∗ = (1.5075, 0.5337, 0.0000, 0.5018), y∗ = (2.4143, 1.1463, 0.0000, 0.0000).
 
-    dom_nneg(v) = (v[1], v[2], v[3], v[4], 1 - v[1], 1 - v[2], 1 - v[3], 1 - v[4])
-    dom_null(v) = 0
 
-    u1(x, y) = -(y[1] * (x[2] + x[3] + x[4] − 1)^2 + y[2] * (x[1] + x[3] + x[4] − 2)^2 + y[3] * (x[1] + x[2] + x[4] − 3)^2 − y[4] * (x[1] + x[2] + x[3] − 4)^2 − (x[1] * (y[2] + y[3] + y[4] − 1)^2 + x[2] * (y[1] + y[3] + y[4] − 2)^2 − x[3] * (y[1] + y[2] + y[4] − 3)^2 + x[4] * (y[1] + y[2] + y[3] − 4)^2))
-    u2(x, y) = -u1(x, y)
-
-    (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (4, 4)
-end
-=#
-
-#=
-utils, nneg, null, dims = ex_nie21_6_10()
+utils, nneg, null, dims = ex_nie21_6_9()
 quack = Quack.quack_oracle(utils, nneg, null, dims)
 @show cnt, (actions, mixed, vals, best) = Quack.until_eps(quack, 1e-3)
-=#
