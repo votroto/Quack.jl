@@ -27,12 +27,18 @@ function unilateral_payoffs_continuous(
     ntuple(i -> x -> deviation(i, x), N)
 end
 
-
-"""TODO: FIX! No way to know the eps set by user"""
-function epspush(xs, y, val, best; eps=1e-6)
-    if best - val <= eps
-        xs
-    else
-        [xs; y]
+function epspush(xs::Vector{NTuple{N, F}}, y; eps=1e-6) where {N,F}
+    ys = NTuple{N, F}[]
+    for x in xs
+        cont = true
+        for i in 1:N
+            cont &= !isapprox(x[i], y[i]; rtol=eps)
+        end
+        if cont
+            push!(ys, x)
+        end
     end
+    push!(ys, y)
+
+    ys
 end

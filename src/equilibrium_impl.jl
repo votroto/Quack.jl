@@ -51,5 +51,8 @@ function subgame_equilibrium(
     values = ntuple(i -> value.(w[i]), N)
     strats = ntuple(i -> value.(x[i]), N)
 
+
+    #@show strats
+    #println()
     values, strats
 end

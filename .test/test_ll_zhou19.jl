@@ -6,16 +6,7 @@ using Revise
 # Saddle points of rational functions
 # Guangming Zhou, Qin Wang, Wenjie Zhao
 
-#=
-full_null(x) = 0
-unitball3d(x) = 1 - x[1]^2 - x[2]^2 - x[3]^2
-
-u1(x, y) = -(x[1]^2 * y[1] + 2 * x[2]^2 * y[2] + 3 * x[3]^2 * y[3] - x[1] - x[2] - x[3]) / (x[1] * y[1] + 1)
-u2(x, y) = -u1(x, y)
-
-quack = Quack.quack_oracle((u1, u2), (unitball3d, unitball3d), (full_null, full_null), (3, 3))
-@show cnt, (actions, mixed, vals, best) = Quack.until_eps(quack, 1e-3)
-=#
+# Examples of two-player zero-sum rational polynomial games (mostly) on compact nD subsets of R.
 
 function ex_zhou19_5_1()
     # two saddle points
@@ -344,8 +335,9 @@ function ex_zhou19_5_9_ii()
     (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (3, 3)
 end
 
+#=
 utils, nneg, null, dims = ex_zhou19_5_9_ii()
 quack = Quack.quack_oracle(utils, nneg, null, dims)
 @show cnt, (actions, mixed, vals, best) = Quack.until_eps(quack, 1e-3)
-
+=#
 

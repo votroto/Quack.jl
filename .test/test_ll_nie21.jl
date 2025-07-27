@@ -6,7 +6,7 @@ using Revise
 # The Saddle Point Problem of Polynomials
 # Jiawang Nie, Zi Yang, Guangming Zhou
 
-# Examples of two-player zero-sum polynomial games on compact nD subsets of R.
+# Examples of two-player zero-sum polynomial games (mostly) on compact nD subsets of R.
 
 function ex_nie21_6_1_i()
     # Example 6.1 (i)
@@ -217,10 +217,10 @@ function ex_nie21_6_9()
 
     # unbounded
 
-    dom_nneg(v) =  (v[1], v[1] * v[2] - 1, v[2] * v[3] - 1)
+    dom_nneg(v) = (v[1], v[1] * v[2] - 1, v[2] * v[3] - 1)
     dom_null(v) = 0
 
-    u1(x, y) = -(x[1]^3*y[1] + x[2]^3*y[2] + x[3]^3*y[3] - 3*x[1]*x[2]*x[3] - y[1]^2 - 2*y[2]^2 - 3*y[3]^2)
+    u1(x, y) = -(x[1]^3 * y[1] + x[2]^3 * y[2] + x[3]^3 * y[3] - 3 * x[1] * x[2] * x[3] - y[1]^2 - 2 * y[2]^2 - 3 * y[3]^2)
     u2(x, y) = -u1(x, y)
 
     (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (3, 3)
@@ -240,14 +240,14 @@ function ex_nie21_6_10()
     A2 = [-4 4 1 0 1; -2 -4 2 -3 1; -3 1 1 4 4; 3 -4 0 1 -2; -1 -3 -1 3 -2]
     B = [-2 -4 -2 -5 3; 0 0 2 4 2; 0 -4 -1 -5 3; 1 -3 -4 0 -3; 3 -1 -5 4 -4]
 
-    u1(x, y) = (sum(x[i]*A1[i,j]*x[j] for i in 1:5, j in 1:5) + sum(y[i]*A2[i,j]*y[j] for i in 1:5, j in 1:5) + sum(x[i]*B[i,j]*y[j] for i in 1:5, j in 1:5))
+    u1(x, y) = (sum(x[i] * A1[i, j] * x[j] for i in 1:5, j in 1:5) + sum(y[i] * A2[i, j] * y[j] for i in 1:5, j in 1:5) + sum(x[i] * B[i, j] * y[j] for i in 1:5, j in 1:5))
     u2(x, y) = -u1(x, y)
 
     (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (5, 5)
 end
 
-
-
+#=
 utils, nneg, null, dims = ex_nie21_6_9()
 quack = Quack.quack_oracle(utils, nneg, null, dims)
 @show cnt, (actions, mixed, vals, best) = Quack.until_eps(quack, 1e-3)
+=#
