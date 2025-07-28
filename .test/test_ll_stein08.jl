@@ -5,7 +5,7 @@ using Revise
 # https://doi.org/10.1007/s00182-008-0129-2
 # Stein, N.D., Ozdaglar, A. & Parrilo, P.A.
 
-# Non-zero-sum multiplayer polynomial separable games on [-1,1]
+# general-sum multiplayer polynomial separable games on [-1,1]
 
 function ex_stein08_2_3()
     # mixed NE
@@ -49,9 +49,3 @@ function ex_stein08_3_10()
 
     (u1, u2, u3), (dom_nneg, dom_nneg, dom_nneg), (dom_null, dom_null, dom_null), (1, 1, 1)
 end
-
-#=
-utils, nneg, null, dims = ex_stein08_2_3()
-quack = Quack.quack_oracle(utils, nneg, null, dims)
-@show cnt, (actions, mixed, vals, best) = Quack.until_eps(quack, 1e-3)
-=#

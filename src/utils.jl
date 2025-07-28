@@ -30,9 +30,9 @@ end
 function epspush(xs::Vector{NTuple{N, F}}, y; eps=1e-6) where {N,F}
     ys = NTuple{N, F}[]
     for x in xs
-        cont = true
+        cont = false
         for i in 1:N
-            cont &= !isapprox(x[i], y[i]; rtol=eps)
+            cont |= !isapprox(x[i], y[i]; rtol=eps)
         end
         if cont
             push!(ys, x)

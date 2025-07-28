@@ -4,6 +4,8 @@ using Revise
 # Convergence Analysis of Gradient-Based Learning in Continuous Games
 # Benjamin Chasnov, Lillian Ratliff, Eric Mazumdar, Samuel Burden
 
+# Two-player general-sum continuous game played on an interval ("torus").
+
 function ex_chasnov20_5_2()
     # two pure equilibria at (-1.063, 1.014) and (1.408, -0.325).
 

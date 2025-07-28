@@ -153,8 +153,8 @@ function ex_nie21_6_4_ii()
     (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (3, 3)
 end
 
-function ex_nie21_6_5_i()
-    # Example 6.5 (i)
+function ex_nie21_6_5()
+    # Example 6.5
     # saddle points
     # x∗ = (0.7264, 0.4576, 0.3492), y∗ = (0.6883, 0.5463, 0.4772).
 
