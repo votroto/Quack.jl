@@ -245,9 +245,3 @@ function ex_nie21_6_10()
 
     (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (5, 5)
 end
-
-#=
-utils, nneg, null, dims = ex_nie21_6_9()
-quack = Quack.quack_oracle(utils, nneg, null, dims)
-@show cnt, (actions, mixed, vals, best) = Quack.until_eps(quack, 1e-3)
-=#

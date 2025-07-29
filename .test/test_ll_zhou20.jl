@@ -281,7 +281,6 @@ function ex_zhou19_5_8_i()
     (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (3, 3)
 end
 
-
 function ex_zhou19_5_8_ii()
     # no saddle point
     # unbounded
@@ -315,7 +314,6 @@ function ex_zhou19_5_9_i()
 
     (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (3, 3)
 end
-
 
 function ex_zhou19_5_9_ii()
     # saddle point

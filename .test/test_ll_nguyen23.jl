@@ -42,7 +42,3 @@ function ex_nguyen23_iv()
 
     tuple(u...), ntuple(i -> dom_nneg, 6), ntuple(i -> dom_null, 6), ntuple(i -> 1, 6)
 end
-
-utils, nneg, null, dims = ex_nguyen23_iv()
-quack = Quack.quack_oracle(utils, nneg, null, dims)
-@show cnt, (actions, mixed, vals, best) = Quack.until_eps(quack, 1e-3)

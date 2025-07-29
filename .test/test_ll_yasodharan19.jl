@@ -16,8 +16,3 @@ function ex_yasodharan19()
 
     (u1, u2), (dom_nneg1, dom_nneg2), (dom_null, dom_null), (m+1, 1)
 end
-
-
-utils, nneg, null, dims = ex_yasodharan19()
-quack = Quack.quack_oracle(utils, nneg, null, dims)
-@show cnt, (actions, mixed, vals, best) = Quack.until_eps(quack, 1e-3)

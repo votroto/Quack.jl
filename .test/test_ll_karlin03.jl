@@ -56,7 +56,3 @@ function ex_karlin03_vol2_sec76_pr2()
 
     (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (1, 1)
 end
-
-utils, nneg, null, dims = ex_karlin03_sec71_ex2()
-quack = Quack.quack_oracle(utils, nneg, null, dims)
-@show cnt, (actions, mixed, vals, best) = Quack.until_eps(quack, 1e-3)
