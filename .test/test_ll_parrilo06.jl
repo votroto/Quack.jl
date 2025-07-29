@@ -33,7 +33,7 @@ function ex_parrilo06_3_1()
     dom_nneg(v) = (1 - v[1], 1 + v[1])
     dom_null(v) = 0
 
-    u1(x, y) = 2*x[1]*y[1]^2 - x[1]^2 - y[1]
+    u1(x, y) = 2 * x[1] * y[1]^2 - x[1]^2 - y[1]
     u2(x, y) = -u1(x, y)
 
     (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (1, 1)
@@ -49,7 +49,7 @@ function ex_parrilo06_3_2()
     dom_nneg(v) = (1 - v[1], 1 + v[1])
     dom_null(v) = 0
 
-    u1(x,y) = 5*x[1]*y[1] - 2*x[1]^2 - 2*x[1]*y[1]^2 - y[1]
+    u1(x, y) = 5 * x[1] * y[1] - 2 * x[1]^2 - 2 * x[1] * y[1]^2 - y[1]
     u2(x, y) = -u1(x, y)
 
     (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (1, 1)

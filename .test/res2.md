@@ -48,7 +48,7 @@
 
 ### Yasodharan Loiseau 2019 - Nonzero-sum adversarial hypothesis testing games.
 
- - modified version of eq (3.1)
+ - eq (3.1) (our interpretation)
 
 ### Zhou et al 2020 - Saddle points of rational functions
 
@@ -74,6 +74,7 @@
 ### Daskalakis et al 2023 - STay-ON-the-Ridge: Guaranteed Convergence to Min-Max Critical Points in Nonconvex-Nonconcave Games
 
  - Appendix D
+ - Appendix E 1st
 
 ### Mertikopoulos et al 2018 - Optimistic Mirror Descent In Saddle-Point Problems: Going The Extra (Gradient) Mile
 
@@ -84,3 +85,20 @@
 
  - 5
  - 6
+
+### Razaviyayn et al 2020 - Non-convex Min-Max Optimization: Applications, Challenges, and Recent Theoretical Advances
+
+ - 1
+ - 3
+
+### Zheng et al 2023 - Universal Gradient Descent Ascent Method for Nonconvex-Nonconcave Minimax Optimization
+
+ - convex-nonconcave
+ - kl-nonconcave
+ - bilinearly-coupled minimax
+ - forsaken
+
+### Others
+
+ - difference of squares
+ - monkey saddle

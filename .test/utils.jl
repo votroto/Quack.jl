@@ -52,4 +52,15 @@ function run_example(example)
     utils, nneg, null, dims = example()
     quack = Quack.quack_oracle(utils, nneg, null, dims)
     @show cnt, (actions, mixed, vals, best) = Quack.until_eps(quack, 1e-3)
+
+    prettyprints(actions,mixed)
+end
+
+function latexify_example(example)
+    utils, nneg, null, dims = example()
+    vars = ntuple(i -> [Symbolics.variable(:x, i*10+j) for j in 1:dims[i]], length(dims))
+
+    for i in eachindex(dims)
+        println(latexify(utils[i](vars...)))
+    end
 end
