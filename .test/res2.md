@@ -98,7 +98,16 @@
  - bilinearly-coupled minimax
  - forsaken
 
+### Ratliff et al 2013 - Characterization and computation of local Nash equilibria in continuous games
+
+ - location game
+
+### Adam et al 2021 - Double Oracle Algorithm for Computing Equilibria in Continuous Games
+
+ - townsend
+
 ### Others
 
  - difference of squares
  - monkey saddle
+ - mul, div
