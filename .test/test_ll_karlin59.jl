@@ -1,11 +1,11 @@
 include("../src/Quack.jl")
 using Revise
 
-# Mathematical methods and theory in games, programming, and economics
+# The Theory of Infinite Games
 # Karlin, Samuel
 
 
-function ex_karlin03_vol2_sec71_ex1()
+function ex_karlin59_vol2_sec71_ex1()
     dom_nneg(x) = (x[1], 1 - x[1])
     dom_null(x) = 0
 
@@ -18,7 +18,7 @@ function ex_karlin03_vol2_sec71_ex1()
     (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (1, 1)
 end
 
-function ex_karlin03_vol2_sec71_ex2()
+function ex_karlin59_vol2_sec71_ex2()
     # NE
     # cantor distribution
 
@@ -33,7 +33,7 @@ function ex_karlin03_vol2_sec71_ex2()
     (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (1, 1)
 end
 
-function ex_karlin03_vol2_sec76_pr1()
+function ex_karlin59_vol2_sec76_pr1()
     dom_nneg(x) = (x[1], 1 - x[1])
     dom_null(x) = 0
 
@@ -45,7 +45,7 @@ function ex_karlin03_vol2_sec76_pr1()
     (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (1, 1)
 end
 
-function ex_karlin03_vol2_sec76_pr2()
+function ex_karlin59_vol2_sec76_pr2()
     dom_nneg(x) = (x[1], 1 - x[1])
     dom_null(x) = 0
 

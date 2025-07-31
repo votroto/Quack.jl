@@ -15,6 +15,8 @@ function ex_daskalakis_d()
 end
 
 function ex_daskalakis_e_1st()
+    # also in: On Finding Local Nash Equilibria (and only Local Nash Equilibria) in Zero-Sum Games, ERIC MAZUMDAR, S. SHANKAR SASTRY and MICHAEL I. JORDAN
+
     dom_nneg(x) = 1 - x[1]^2
     dom_null(x) = 0
 

@@ -49,3 +49,4 @@ function ex_kroupa21_6()
 
     (u1, u2, u3, u4), (dom_nneg1, dom_nneg2, dom_nneg3, dom_nneg4), (dom_null1, dom_null2, dom_null3, dom_null4), (4, 4, 2, 2)
 end
+
