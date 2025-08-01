@@ -1,7 +1,7 @@
 include("../src/Quack.jl")
 using Revise
 
-function ex_classical_square_diff()
+function ex_misc_square_diff()
     dom_nneg(x) = 1 - x[1]^2
     dom_null(x) = 0
 
@@ -11,7 +11,7 @@ function ex_classical_square_diff()
     (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (1, 1)
 end
 
-function ex_classical_monkey_saddle()
+function ex_misc_monkey_saddle()
     dom_nneg(x) = 1 - x[1]^2
     dom_null(x) = 0
 
@@ -21,7 +21,7 @@ function ex_classical_monkey_saddle()
     (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (1, 1)
 end
 
-function ex_classical_mul_div()
+function ex_misc_mul_div()
     dom_nneg(x) = -(2 + x[1])^2 + 1
     dom_null(x) = 0
 

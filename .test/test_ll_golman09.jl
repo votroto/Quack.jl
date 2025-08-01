@@ -97,7 +97,21 @@ function ex_golman09_all_sets_p1_5d()
 end
 
 
-utils, nneg, null, dims = ex_golman09_all_sets_p1_5d()
+function ex_golman09_isolated_p02_5d()
+    dom_nneg(v) = (v[1], v[2], v[3], v[4], v[5], 1-v[1], 1-v[2], 1-v[3], 1-v[4], 1-v[5])
+    dom_null(v) = v[1] + v[2] + v[3] + v[4] + v[5] - 1
+
+    #f(x::Float64) = sign(x)*abs(x)^0.2
+    f(x) = x/(((x^2)^0.4)+1e-6)
+
+    u1(x, y) = sum(f(x[i] - y[i]) for i in 1:5)
+    u2(x, y) = -u1(x, y)
+
+    (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (5, 5)
+end
+
+
+utils, nneg, null, dims = ex_golman09_isolated_p02_5d()
 quack = Quack.quack_oracle(utils, nneg, null, dims)
 @show cnt, (actions, mixed, vals, best) = Quack.until_eps(quack, 1e-3)
 

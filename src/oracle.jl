@@ -69,6 +69,9 @@ function best_response(
     @constraint(m, dom_null(x) .== 0)
     @objective(m, Max, payoff(x))
 
+    @show start
+    @show payoff(x)
+
     set_start_value.(x, start)
     optimize!(m)
 
