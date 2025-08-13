@@ -180,7 +180,7 @@ function ex_nie21_6_6()
     (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (3, 3)
 end
 
-function ex_nie21_6_7()
+function _ex_nie21_6_7()
     # Example 6.7
     # saddle points
     # x∗ = (1.5075, 0.5337, 0.0000, 0.5018), y∗ = (2.4143, 1.1463, 0.0000, 0.0000).
@@ -196,10 +196,9 @@ function ex_nie21_6_7()
     (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (4, 4)
 end
 
-function ex_nie21_6_8()
+function _ex_nie21_6_8()
     # saddle points
     # x∗ = −(0.6981, 0.6981, 0.6981), y∗ = (0.4979, 0.4979, 0.4979)
-
     # unbounded
 
     dom_nneg(v) = 1
@@ -211,7 +210,7 @@ function ex_nie21_6_8()
     (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (3, 3)
 end
 
-function ex_nie21_6_9()
+function _ex_nie21_6_9()
     # saddle points
     # x∗ = (1.2599, 1.2181, 1.3032), y∗ = (1.0000, 1.1067, 0.9036)
 

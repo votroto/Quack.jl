@@ -17,6 +17,7 @@ function ex_mertikopoulos18_fig1()
 end
 
 function ex_mertikopoulos18_2_2()
+    # The only saddle-point of f is x∗ = (0, 0): it
     dom_nneg(x) = (1 + x[1], 1 - x[1])
     dom_null(x) = 0
 

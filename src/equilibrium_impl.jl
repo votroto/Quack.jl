@@ -1,3 +1,4 @@
+
 const GRB_ENV_REF = Ref{Gurobi.Env}()
 
 function __init__()
@@ -22,6 +23,14 @@ function subgame_equilibrium(
     actions::NTuple{N,AbstractVector};
     optimizer=_default_optimizer
 ) where {N}
+
+#nfgs = normal_form_subgames(payoffs, actions)
+#println(nfgs[1])
+#wal, strxs, strys, tim = linear_program(nfgs[1])
+##value.(w), dual.(dx), value.(ys), solve_time(m)
+#return (wal, -wal), (abs.(strxs), abs.(strys))
+#
+#
     ztratz, wals = subgame_gambit_nfg_export(payoffs, actions)
     #=
         _simplex_var(i, a) = @variable(m; base_name="x[$i,$a]", lower_bound=0, upper_bound=1)
@@ -64,11 +73,11 @@ function normal_form_subgames(
 ) where {N}
     players = eachindex(payoffs)
     dims = ntuple(i -> length(actions[i]), N)
-    nfgs = ntuple(i -> Matrix{Float32,N}(undef, dims), N)
+    nfgs = ntuple(i -> Array{Float64,N}(undef, dims), N)
 
     for i in Iterators.product(eachindex.(actions)...)
         for p in players
-            nfgs[p][i[p]] = payoffs[p](getindex.(actions, i)...)
+            nfgs[p][i...] = payoffs[p](getindex.(actions, i)...)
         end
     end
 
@@ -96,7 +105,8 @@ function subgame_gambit_nfg_export(
         end
     end
     allinput = String(take!(ioin))
-
+    #@show actions
+    #@show allinput
     open(pipeline(`gambit-logit -q -e -m1e-6`; stdin=IOBuffer(allinput)), "r", stdout) do ioout
         zz = read(ioout, String)
 
@@ -125,3 +135,19 @@ function subgame_gambit_nfg_export(
 
 end
 
+
+"""Computes the value and NE strategies for a zero-sum game"""
+function linear_program(u::AbstractMatrix; optimizer=_default_optimizer)
+    m = Model(optimizer)
+
+    ny = size(u, 2)
+    @variable(m, ys[1:ny], lower_bound=0, upper_bound=1)
+    @variable(m, w)
+
+    @constraint(m, sum(ys) == 1)
+    @constraint(m, dx, u * ys .<= w)
+    @objective(m, Min, w)
+    optimize!(m)
+
+    value.(w), dual.(dx), value.(ys), solve_time(m)
+end

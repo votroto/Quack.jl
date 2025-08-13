@@ -1,6 +1,7 @@
 include("../src/Quack.jl")
 using Revise
 
+
 function prettyprints(actss, wghtss)
     for p in eachindex(actss)
         for i in eachindex(actss[p])
@@ -12,6 +13,26 @@ function prettyprints(actss, wghtss)
         println()
     end
 end
+
+
+function deltaprints(actss, wghtss;io=stdout)
+    function supfmt(act)
+        if length(act) == 1
+            return round(only(act); digits=2)
+        else
+            return round.(act;digits=2)
+        end
+    end
+    function dprint(p,acts, wghts)
+        zp = collect(zip(acts, wghts))
+        aw = join(map(x -> "$(round(x[2];digits=3))\\delta_{ $(supfmt(x[1])) }", sort(filter(x -> x[2] > 5e-4 , zp), by=x -> x[2])), " + ")
+        return "\\mu_$p^\\star &\\approx $aw"
+    end
+    println(io, "\\begin{align*}")
+    println(io, join([dprint(p, actss[p], wghtss[p]) for p in eachindex(actss)], ",\\\\ \n"), ".")
+    println(io, "\\end{align*}")
+end
+
 
 function saddle(f, x, y; ε=1e-4)
     N = length(x)
@@ -48,12 +69,27 @@ function saddle(f, x, y; ε=1e-4)
     return slopesx, slopesy
 end
 
-function run_example(example)
+function run_example(example; eps=1e-3)
     utils, nneg, null, dims = example()
     quack = Quack.quack_oracle(utils, nneg, null, dims)
-    @show cnt, (actions, mixed, vals, best) = Quack.until_eps(quack, 1e-3)
+    @time cnt, (actions, mixed, vals, best) = Quack.until_eps(quack, eps)
 
-    prettyprints(actions,mixed)
+    deltaprints(actions,mixed)
+
+    cnt, (actions, mixed, vals, best)
+end
+
+function run_example_tex(name, example; io=stdout, eps=1e-3)
+    utils, nneg, null, dims = example()
+    quack = Quack.quack_oracle(utils, nneg, null, dims)
+    Quack.until_eps(quack, 1e10)
+    stats = @timed cnt, (actions, mixed, vals, best) = Quack.until_eps(quack, eps)
+
+    println(io, "\\item[Example \\ref{$(replace(name, "_"=>"."))}]")
+    println(io, "Time: \$$(round(stats.time; sigdigits=2))\\,s\$, iterations: \$$cnt\$\\\\")
+    println(io, "Equilibrium:")
+    deltaprints(actions,mixed; io)
+
 end
 
 function latexify_example(example)

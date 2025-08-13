@@ -63,17 +63,19 @@ function best_response(
     dim=length(start),
     optimizer=_default_optimizer
 )
-    m = Model(optimizer)
-    @variable(m, x[1:dim])
-    @constraint(m, dom_nneg(x) .>= 0)
-    @constraint(m, dom_null(x) .== 0)
-    @objective(m, Max, payoff(x))
+m = Model(optimizer)
+@variable(m, x[1:dim])
+@constraint(m, dom_nneg(x) .>= 0)
+@constraint(m, dom_null(x) .== 0)
+@objective(m, Max, payoff(x))
 
-    #@show start
-    #@show payoff(x)
-
+#@show payoff(x)
     set_start_value.(x, start)
     optimize!(m)
 
-    objective_value(m), tuple(value.(x)...)
+    if JuMP.termination_status(m) == JuMP.MOI.OPTIMAL
+        objective_value(m), tuple(value.(x)...)
+    else
+        NaN
+    end
 end

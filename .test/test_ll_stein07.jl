@@ -16,9 +16,3 @@ function ex_stein07_4_3_1()
 
     (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (1, 1)
 end
-
-utils, nneg, null, dims = ex_stein07_4_3_1()
-quack = Quack.quack_oracle(utils, nneg, null, dims)
-@show cnt, (actions, mixed, vals, best) = Quack.until_eps(quack, 1e-3)
-
-prettyprints(actions,mixed)

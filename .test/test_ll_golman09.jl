@@ -110,9 +110,38 @@ function ex_golman09_isolated_p02_5d()
     (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (5, 5)
 end
 
+function ex_golman09_isolated_p2_nd(n)
+    dom_nneg(v) = ntuple(i->v[i], n)
+    dom_null(v) = sum(v[i] for i in 1:n) - 1
 
-utils, nneg, null, dims = ex_golman09_isolated_p02_5d()
-quack = Quack.quack_oracle(utils, nneg, null, dims)
-@show cnt, (actions, mixed, vals, best) = Quack.until_eps(quack, 1e-3)
+    f(x) = sqrt(x^2) * x
 
-prettyprints(actions, mixed)
+    u1(x, y) = sum(f(x[i] - y[i]) for i in 1:n)
+    u2(x, y) = -u1(x, y)
+
+    (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (n, n)
+end
+
+function ex_golman09_all_pairs_p2_nd(n)
+    dom_nneg(v) = ntuple(i->v[i], n)
+    dom_null(v) = sum(v[i] for i in 1:n) - 1
+
+    f(x) = sqrt(x^2) * x
+
+    u1(x, y) = sum(f(x[j] * x[k] - y[j] * y[k]) for j in 1:n-1 for k in (j+1):n) + sum(f(x[i] - y[i]) for i in 1:n)
+    u2(x, y) = -u1(x, y)
+
+    (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (n, n)
+end
+
+function ex_golman09_all_sets_p2_nd(n)
+    dom_nneg(v) = ntuple(i->v[i], n)
+    dom_null(v) = sum(v[i] for i in 1:n) - 1
+
+    f(x) = sqrt(x^2) * x
+
+    u1(x, y) = sum(f(prod(x[i] for i in I) - prod(y[i] for i in I)) for I in all_combinations(n))
+    u2(x, y) = -u1(x, y)
+
+    (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (n, n)
+end

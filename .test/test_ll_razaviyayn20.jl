@@ -24,9 +24,3 @@ function ex_razaviyayn20_5_3()
 
     (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (1, 1)
 end
-
-utils, nneg, null, dims = ex_razaviyayn20_5_3()
-quack = Quack.quack_oracle(utils, nneg, null, dims)
-@show cnt, (actions, mixed, vals, best) = Quack.until_eps(quack, 1e-3)
-
-prettyprints(actions,mixed)

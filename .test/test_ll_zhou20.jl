@@ -109,7 +109,7 @@ function ex_zhou19_5_4_i()
 end
 
 
-function ex_zhou19_5_4_ii()
+function _ex_zhou19_5_4_ii()
     # no saddle point
 
     # not compact
@@ -221,10 +221,10 @@ function ex_zhou19_5_7_i_polar()
     # x = [0.8812945920343842, 0.9716157415160604]
     # y = [1.0174554472964583]
 
-    dom_nneg1(v) = (v[1], v[2], pi / 2 - v[1], pi / 2 - v[2])
+    dom_nneg1(v) = (v[1]-1e-8, v[2]-1e-8, pi / 2 - v[1], pi / 2 - v[2])
     dom_null1(v) = 0
 
-    dom_nneg2(v) = (v[1], pi / 2 - v[1])
+    dom_nneg2(v) = (v[1]-1e-8, pi / 2 - v[1] + 1e-8)
     dom_null2(v) = 0
 
     p(x, y) = sum(x[i]^2 - x[i] for i in 1:3) + sum(y[i] - y[i]^2 for i in 1:2)
@@ -264,7 +264,7 @@ function ex_zhou19_5_7_ii()
     (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (3, 3)
 end
 
-function ex_zhou19_5_8_i()
+function _ex_zhou19_5_8_i()
     # saddle point
     # x∗ = (0.3508, 0.5000, 0.0000), y∗ = (0.0000, 0.0000, 0.0000)
 
@@ -282,7 +282,7 @@ function ex_zhou19_5_8_i()
     (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (3, 3)
 end
 
-function ex_zhou19_5_8_ii()
+function _ex_zhou19_5_8_ii()
     # no saddle point
     # unbounded
 
@@ -298,7 +298,7 @@ function ex_zhou19_5_8_ii()
     (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (3, 3)
 end
 
-function ex_zhou19_5_9_i()
+function _ex_zhou19_5_9_i()
     # saddle point
     # x∗ = (0.8914, 1.1219, 0.8914), y∗ = (0.8914, 1.1219, 0.8914)
 
@@ -316,7 +316,7 @@ function ex_zhou19_5_9_i()
     (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (3, 3)
 end
 
-function ex_zhou19_5_9_ii()
+function _ex_zhou19_5_9_ii()
     # saddle point
     # x∗ = (0.9230, 1.0834, 2.8239), y∗ = (1.0459, 0.9561, 1.3804)
 
