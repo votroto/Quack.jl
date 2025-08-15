@@ -20,74 +20,11 @@ corresponding strategies.
 """
 function subgame_equilibrium(
     payoffs::NTuple{N,Function},
-    actions::NTuple{N,AbstractVector};
-    optimizer=_default_optimizer
-) where {N}
-
-#nfgs = normal_form_subgames(payoffs, actions)
-#println(nfgs[1])
-#wal, strxs, strys, tim = linear_program(nfgs[1])
-##value.(w), dual.(dx), value.(ys), solve_time(m)
-#return (wal, -wal), (abs.(strxs), abs.(strys))
-#
-#
-    ztratz, wals = subgame_gambit_nfg_export(payoffs, actions)
-    #=
-        _simplex_var(i, a) = @variable(m; base_name="x[$i,$a]", lower_bound=0, upper_bound=1)
-
-        players = eachindex(payoffs)
-        act_ids = eachindex.(actions)
-
-        m = Model(optimizer)
-
-        x = ntuple(i -> [_simplex_var(i, a) for a in act_ids[i]], N)
-        @variable(m, w[i=players])
-
-        brfs = ntuple(i -> zeros(NonlinearExpr, act_ids[i]), N)
-        unilateral_payoffs!(brfs, payoffs, actions, x)
-
-        sum_payoff = sum(brfs[i][a] * x[i][a] for i in players for a in act_ids[i])
-        @constraint(m, [i = players], brfs[i] .<= w[i])
-        @constraint(m, sum_payoff >= sum(w))
-        @constraint(m, [i = players], sum(x[i]) == 1)
-
-        optimize!(m)
-
-        values = ntuple(i -> value.(w[i]), N)
-        strats = ntuple(i -> value.(x[i]), N)
-
-
-        @show strats
-        @show ztratz
-
-        @show wals
-        @show values
-    =#
-    wals, ztratz
-    #values, strats
-end
-
-function normal_form_subgames(
-    payoffs::NTuple{N,Function},
     actions::NTuple{N,AbstractVector}
 ) where {N}
-    players = eachindex(payoffs)
-    dims = ntuple(i -> length(actions[i]), N)
-    nfgs = ntuple(i -> Array{Float64,N}(undef, dims), N)
 
-    for i in Iterators.product(eachindex.(actions)...)
-        for p in players
-            nfgs[p][i...] = payoffs[p](getindex.(actions, i)...)
-        end
-    end
+    # Oof!
 
-    nfgs
-end
-
-function subgame_gambit_nfg_export(
-    payoffs::NTuple{N,Function},
-    actions::NTuple{N,AbstractVector}
-) where {N}
     players = eachindex(payoffs)
     dims = ntuple(i -> length(actions[i]), N)
 
@@ -105,8 +42,6 @@ function subgame_gambit_nfg_export(
         end
     end
     allinput = String(take!(ioin))
-    #@show actions
-    #@show allinput
     open(pipeline(`gambit-logit -q -e -m1e-6`; stdin=IOBuffer(allinput)), "r", stdout) do ioout
         zz = read(ioout, String)
 
@@ -128,26 +63,7 @@ function subgame_gambit_nfg_export(
 
             end
         end
-
-
-        return ntuple(i -> nes[i], N), tuple(wout...)
+        return tuple(wout...), ntuple(i -> nes[i], N)
     end
 
-end
-
-
-"""Computes the value and NE strategies for a zero-sum game"""
-function linear_program(u::AbstractMatrix; optimizer=_default_optimizer)
-    m = Model(optimizer)
-
-    ny = size(u, 2)
-    @variable(m, ys[1:ny], lower_bound=0, upper_bound=1)
-    @variable(m, w)
-
-    @constraint(m, sum(ys) == 1)
-    @constraint(m, dx, u * ys .<= w)
-    @objective(m, Min, w)
-    optimize!(m)
-
-    value.(w), dual.(dx), value.(ys), solve_time(m)
 end
