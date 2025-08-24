@@ -8,7 +8,8 @@ function __init__()
     return
 end
 
-
+#using AmplNLWriter, Couenne_jll
+#_default_optimizer() = AmplNLWriter.Optimizer(Couenne_jll.amplexe)
 _default_optimizer() = Gurobi.Optimizer(GRB_ENV_REF[])
 
 

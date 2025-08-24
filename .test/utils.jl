@@ -100,3 +100,19 @@ function latexify_example(example)
         println(latexify(utils[i](vars...)))
     end
 end
+
+function run_example_exploit(example; iterations)
+    utils, nneg, null, dims = example()
+    quack = Quack.quack_oracle(utils, nneg, null, dims)
+
+    exploit = Array{Any}(undef, iterations)
+    iter = 1
+
+    for (actions, mixed, vals, best) in Iterators.take(quack, iterations)
+        exploit[iter] = collect(best) .- collect(vals)
+        iter += 1
+    end
+
+    exploit
+end
+
