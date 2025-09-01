@@ -1,4 +1,5 @@
 
+
 const GRB_ENV_REF = Ref{Gurobi.Env}()
 
 function __init__()
@@ -8,8 +9,10 @@ function __init__()
     return
 end
 
-#using AmplNLWriter, Couenne_jll
+using AmplNLWriter, Bonmin_jll,Couenne_jll
 #_default_optimizer() = AmplNLWriter.Optimizer(Couenne_jll.amplexe)
+using SCIP
+#_default_optimizer() = SCIP.Optimizer()
 _default_optimizer() = Gurobi.Optimizer(GRB_ENV_REF[])
 
 
