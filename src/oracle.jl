@@ -124,6 +124,37 @@ function blotto_oracle_one(
     end
 end
 
+using DynamicPolynomials
+function pmaxgbi(
+    payoff;
+    optimizer=_default_optimizer
+)
+
+    @polyvar v
+    poly_payoff = payoff(v)
+
+    deg = maxdegree(poly_payoff)
+    coeffs = coefficients(poly_payoff, monomials(v, 0:deg))
+
+    m = direct_model(_default_optimizer())
+    @variable(m, -1 <= x <= 1)
+    @variable(m, y)
+
+    GRBaddgenconstrPoly(backend(m), "pcon", column(x), column(y), length(coeffs), coeffs, "")
+
+    @objective(m, Max, y)
+    optimize!(m)
+
+    @show JuMP.termination_status(m)
+    @show solve_time(m)
+    #@show value.(x)
+    if JuMP.termination_status(m) == JuMP.MOI.OPTIMAL
+        objective_value(m), tuple(value.(x)...)
+    else
+        NaN
+    end
+end
+
 #column(x::VariableRef) = Gurobi.c_column(backend(owner_model(x)), index(x))
 
 function blotto_oracle_two(
@@ -269,6 +300,7 @@ function poly_max(
     u = payoff(x)
     de = maxdegree(u)
 
+    wval = NaN
     meas = nothing
     dom = @set 1 - x^2 >= 0
     for ord in de:2:10
@@ -281,12 +313,12 @@ function poly_max(
         @show solve_time(m)
         meas = atomic_measure(moment_matrix(c), 1e-3)
         if !isnothing(meas)
+            wval = value(w)
             break
         end
     end
     @show meas
-    @show stats.time
-    value(w)
+    wval
 end
 
 function hankel(mu::AbstractVector{T}) where T
