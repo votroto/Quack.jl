@@ -13,6 +13,22 @@ end
 _default_optimizer() = Gurobi.Optimizer(GRB_ENV_REF[])
 
 
+"""Computes the value and NE strategies for a zero-sum game"""
+function linear_program(u::AbstractMatrix; optimizer=_default_optimizer)
+    m = Model(optimizer)
+
+    ny = size(u, 2)
+    @variable(m, ys[1:ny], lower_bound=0, upper_bound=1)
+    @variable(m, w)
+
+    @constraint(m, sum(ys) == 1)
+    @constraint(m, dx, u * ys .<= w)
+    @objective(m, Min, w)
+    optimize!(m)
+
+    value.(w), abs.(dual.(dx)), value.(ys), solve_time(m)
+end
+
 """
     nash_equilibrium(payoffs)
 
@@ -24,6 +40,15 @@ function subgame_equilibrium(
     actions::NTuple{N,AbstractVector}
 ) where {N}
 
+    pay = zeros(Float64, length(actions[1]), length(actions[2]))
+
+    for i in Iterators.product(eachindex.(actions)...)
+        pay[i...] = payoffs[1](getindex.(actions, i)...)
+    end
+
+    wls, xss, yss, tim = linear_program(pay)
+
+    return tuple(wls, -wls), (xss, yss)
     # Oof!
 
     players = eachindex(payoffs)
@@ -43,7 +68,7 @@ function subgame_equilibrium(
         end
     end
     allinput = String(take!(ioin))
-    open(pipeline(`gambit-logit -q -e -m1e-6`; stdin=IOBuffer(allinput)), "r", stdout) do ioout
+    open(pipeline(`gambit-logit -q -e -m1e-8`; stdin=IOBuffer(allinput)), "r", stdout) do ioout
         zz = read(ioout, String)
 
         ne = parse.(Float64, split(strip(zz), ",")[2:end])

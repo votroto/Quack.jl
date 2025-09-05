@@ -47,18 +47,10 @@ function oracle(
     weights::NTuple{N}
 ) where {N}
 
-    mv1, ac1 = blotto_oracle_one(actions[2], weights[2], 1.0)
-    mv2, ac2 = blotto_oracle_one(actions[1], weights[1], -1.0)
+    mv1, ac1 = blotto_oracle_one(actions[2], weights[2], 1.0, last(actions[1]))
+    mv2, ac2 = blotto_oracle_one(actions[1], weights[1], -1.0, last(actions[2]))
 
     return (mv1, mv2),(ac1, ac2)
-
-    #@show x = only(actions[1][argmax(weights[1])])
-    #@show y = only(actions[2][argmax(weights[2])])
-#
-    #armx = ((y/2,), (x,))
-    #mx = (payoffs[1](armx...), payoffs[2](armx...))
-#
-    #return mx, armx
 
     slice = unilateral_payoffs_continuous(payoffs, actions, weights)
     improved = ntuple(i -> best_response(slice[i], dom_nneg[i], dom_null[i], last(actions[i])), N)
@@ -74,20 +66,22 @@ column(x::VariableRef) = Gurobi.c_column(backend(owner_model(x)), index(x))
 function blotto_oracle_one(
     actions_opponent,
     weights_opponent,
-    vv
+    vv,
+    strt
 )
     num_fronts = length(first(actions_opponent))
     num_mixed = length(actions_opponent)
 
     m = direct_model(_default_optimizer())
     @variable(m, 0<=x[1:num_fronts]<=1)
+    set_start_value.(x, strt)
 
     @variable(m, -1 <= sg[1:num_fronts, 1:num_mixed] <= 1, Int)
     @variable(m, 0 <= ab[1:num_fronts, 1:num_mixed] <= 1)
     @variable(m, 0 <= absq[1:num_fronts, 1:num_mixed] <= 1)
     @variable(m, -1 <= df[1:num_fronts, 1:num_mixed] <= 1)
-    xstrt = rand(num_fronts)
-    set_start_value.(x, xstrt ./ sum(xstrt))
+    #xstrt = rand(num_fronts)
+    #set_start_value.(x, xstrt ./ sum(xstrt))
 
     for mi in 1:num_mixed
         for fi in 1:num_fronts
@@ -132,8 +126,8 @@ function best_response(
     optimize!(m)
 
     @show JuMP.termination_status(m)
-    @show value.(x)
-    if true || JuMP.termination_status(m) == JuMP.MOI.OPTIMAL
+    #@show value.(x)
+    if JuMP.termination_status(m) == JuMP.MOI.OPTIMAL
         objective_value(m), tuple(value.(x)...)
     else
         NaN
