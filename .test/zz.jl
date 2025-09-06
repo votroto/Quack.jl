@@ -1,6 +1,18 @@
 using Gurobi
 using JuMP
 
+using SCIP
+using Couenne_jll
+using AmplNLWriter
+
+
+    m = Model(() -> AmplNLWriter.Optimizer("scip"))
+    @variable(m, -1 <= x <= 1)
+    @objective(m, Min, abs(x-0.3)^0.5)
+
+    optimize!(m)
+
+    @show value(x)
 #=
 A = 10
 
@@ -25,12 +37,13 @@ corssit_fun(x) = -0.0001 * (abs(sin(x[1])*sin(x[2])*exp(abs(100 - sqrt(x[1]^2+x[
 
 drop_fun(x) = -(1 + cos(12*sqrt(x1^2+x2^2)))/( 0.5*(x1^2+x2^2) + 2)
 
-
+#=
 egg_fun(x) =
   term1 <- (-(x2+47) * sin(sqrt(abs(x2+x1/2+47))))
   term2 <- (-x1 * sin(sqrt(abs(x1-(x2+47)))))
 
   y <- term1 + term2
+  =#
 #function ex_test_ackley()
 #    dom_nneg(x) = ackley_dom(x[1])
 #    dom_null(x) = 0
