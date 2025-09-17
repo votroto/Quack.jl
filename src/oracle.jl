@@ -47,20 +47,16 @@ function oracle(
     weights::NTuple{N}
 ) where {N}
 
-    mv1, ac1 = blotto_oracle_three(actions[2], weights[2], 1.0)
-    mv2, ac2 = blotto_oracle_three(actions[1], weights[1], -1.0)
+    stats1 = @timed mv1, ac1 = blotto_oracle_three(actions[2], weights[2], 1.0)
 
-    #_mv1, _ac1 = blotto_oracle_three(actions[2], weights[2], 1.0)
-    #_mv2, _ac2 = blotto_oracle_three(actions[1], weights[1], -1.0)
+    #statsc = @timed mvc, acc = blotto_oracle_cone(actions[2], weights[2])
+#
+    #    @show stats1.time
+    #    @show statsc.time
+    #    @show mv1, ac1
+    #    @show mvc, acc
 
-
-    #@show mv1, ac1
-    #@show _mv1, _ac1
-    #
-    #@show mv2, ac2
-    #@show _mv2, _ac2
-
-    return (mv1, mv2), (ac1, ac2)
+    return (mv1, mv1), (ac1, ac1)
 
     #@show x = only(actions[1][argmax(weights[1])])
     #@show y = only(actions[2][argmax(weights[2])])
@@ -208,20 +204,9 @@ function blotto_oracle_three(
     weights_opponent,
     vv
 )
-    nfronts = length(actions_opponent[1])
-    br = zeros(nfronts)
-    ma = zeros(nfronts)
-    for i in eachindex(actions_opponent)
-        ma += weights_opponent[i] * collect(actions_opponent[i])
-    end
-    mx, ij = findmax(ma)
-    for k in 1:nfronts
-        if k == ij
-            continue
-        end
-        br[k] = ma[k] + mx / (nfronts - 1)
-    end
-    @show br
+    mx, ij = findmax(weights_opponent)
+    br = collect(actions_opponent[ij])
+    #    @show br
 
     num_fronts = length(first(actions_opponent))
     num_mixed = length(actions_opponent)
@@ -229,35 +214,101 @@ function blotto_oracle_three(
     m = Model(_default_optimizer)
     @variable(m, 0 <= act[1:num_fronts] <= 1)
     @constraint(m, sum(act) == 1)
-    xstrt = normalize(br, 1) #rand(num_fronts)
-    set_start_value.(act, xstrt ./ sum(xstrt))
+    xstrt = normalize(br, 1) #normalize(rand(num_fronts), 1)
+    set_start_value.(act, xstrt)
 
     @variable(m, 0 <= p[1:num_fronts, 1:num_mixed] <= 1)
     @variable(m, 0 <= n[1:num_fronts, 1:num_mixed] <= 1)
     @variable(m, 0 <= y[1:num_fronts, 1:num_mixed] <= 1, Bin)
 
-    @variable(m, 0 <= pn[1:num_fronts, 1:num_mixed] <= 1)
+#    @variable(m, 0 <= pn[1:num_fronts, 1:num_mixed] <= 1)
     @variable(m, 0 <= sqpn[1:num_fronts, 1:num_mixed] <= 1)
 
     for mi in 1:num_mixed
-        for fi in 1:num_fronts
-            @constraint(m, act[fi] - actions_opponent[mi][fi] == p[fi, mi] - n[fi, mi])
-            @constraint(m, pn[fi, mi] == p[fi, mi] + n[fi, mi])
-            @constraint(m, p[fi, mi] <= y[fi, mi])
-            @constraint(m, n[fi, mi] <= 1 - y[fi, mi])
-            @constraint(m, sqpn[fi, mi]^2 == pn[fi, mi])
+        if weights_opponent[mi] >= 1e-9
+            for fi in 1:num_fronts
+                @constraint(m, act[fi] - actions_opponent[mi][fi] == p[fi, mi] - n[fi, mi])
+                #@constraint(m, pn[fi, mi] == p[fi, mi] + n[fi, mi])
+                @constraint(m, p[fi, mi] <= y[fi, mi])
+                @constraint(m, n[fi, mi] <= 1 - y[fi, mi])
+                @constraint(m, sqpn[fi, mi]^2 == p[fi, mi] + n[fi, mi])# pn[fi, mi])
+            end
+        else
         end
     end
 
-    @objective(m, Max, sum(weights_opponent[mi] * sum((2 * y[fi, mi] - 1) * sqpn[fi, mi] for fi in 1:num_fronts) for mi in 1:num_mixed))
+    @objective(m, Max, sum(weights_opponent[mi] * sum((2 * y[fi, mi] - 1) * sqpn[fi, mi] for fi in 1:num_fronts) for mi in 1:num_mixed if weights_opponent[mi] >= 1e-9))
+
 
     optimize!(m)
+
+    #@show ma
+    #@show br
+    #@show value.(act)
+    #@show actions_opponent
+    #@show weights_opponent
+
     if JuMP.termination_status(m) == JuMP.MOI.OPTIMAL
         objective_value(m), tuple(value.(act)...)
     else
         NaN
     end
 end
+
+
+
+function blotto_oracle_cone(
+    actions_opponent,
+    weights_opponent
+)
+    mx, ij = findmax(weights_opponent)
+    br = collect(actions_opponent[ij])
+    #    @show br
+
+    num_fronts = length(first(actions_opponent))
+    num_mixed = length(actions_opponent)
+
+    m = Model(_default_optimizer)
+    @variable(m, 0 <= x[1:num_fronts] <= 1)
+    @constraint(m, sum(x) == 1)
+    xstrt = normalize(br, 1)
+    set_start_value.(x, xstrt)
+
+    @variable(m, -1 <= z[1:num_fronts, 1:num_mixed] <= 1)
+    @variable(m, 0 <= p[1:num_fronts, 1:num_mixed] <= 1)
+    @variable(m, 0 <= n[1:num_fronts, 1:num_mixed] <= 1)
+    @variable(m, 0 <= wp[1:num_fronts, 1:num_mixed] <= 1)
+    @variable(m, 0 <= wn[1:num_fronts, 1:num_mixed] <= 1)
+    @variable(m, 0 <= b[1:num_fronts, 1:num_mixed] <= 1, Bin)
+
+    for mi in 1:num_mixed
+        if weights_opponent[mi] >= 1e-9
+            for fi in 1:num_fronts
+                @constraint(m, z[fi, mi] == x[fi] - actions_opponent[mi][fi])
+                @constraint(m, z[fi, mi] == p[fi, mi] - n[fi, mi])
+
+                @constraint(m, p[fi, mi] <= b[fi, mi])
+                @constraint(m, n[fi, mi] <= 1 - b[fi, mi])
+
+                @constraint(m, wp[fi, mi]^2 <= p[fi, mi])
+                @constraint(m, wn[fi, mi]^2 <= n[fi, mi])
+            end
+        else
+        end
+    end
+
+    @objective(m, Max, sum(weights_opponent[mi] * sum(wp[fi, mi] - wn[fi, mi] for fi in 1:num_fronts) for mi in 1:num_mixed if weights_opponent[mi] >= 1e-9))
+
+
+    optimize!(m)
+
+    if JuMP.termination_status(m) == JuMP.MOI.OPTIMAL
+        objective_value(m), tuple(value.(x)...)
+    else
+        NaN
+    end
+end
+
 
 function best_response(
     payoff::Function,

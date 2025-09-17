@@ -30,16 +30,17 @@ end
 function iterate(mo::QuackIterable, actions=mo.start)
     payoffs, dom_nneg, dom_null = mo.payoffs, mo.dom_nneg, mo.dom_null
 
+    _actions = ntuple(i->actions[1], length(actions))
+    actions = _actions
+
     values, mixed = equilibrium(payoffs, actions)
     best, responses = oracle(payoffs, dom_nneg, dom_null, actions, mixed)
     extended = epspush.(actions, responses)
 
     #println()
     #println(values)
-#
     #println(actions)
     #println(mixed)
-#
     #println(best)
     #println(responses)
     (actions, mixed, values, best), extended

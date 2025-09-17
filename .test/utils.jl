@@ -1,12 +1,36 @@
 include("../src/Quack.jl")
 using Revise
 
+using Base.Iterators: product
+using Gurobi
+using JuMP
+using LinearAlgebra
+
+_euclidean_norm((x, y)) = norm(collect(x) - collect(y))
+
+function wasserstein(spt_p, p, spt_q, q; ρ=_euclidean_norm)
+    ρxy = ρ.(product(spt_p, spt_q))
+
+#    @show spt_p, p, spt_q, q
+
+    model = Model(Gurobi.Optimizer)
+    @variable model μ[axes(ρxy, 1), axes(ρxy, 2)] >= 0
+    @objective model Min dot(ρxy, μ)
+    @constraint model sum(μ) == 1
+    @constraint model sum(μ, dims=2) .== normalize(clamp.(p, 0.0, 1.0), 1)
+    @constraint model sum(μ, dims=1) .== normalize(clamp.(q, 0.0, 1.0), 1)'
+
+    set_silent(model)
+    optimize!(model)
+
+    objective_value(model)
+end
 
 function prettyprints(actss, wghtss)
     for p in eachindex(actss)
         for i in eachindex(actss[p])
             if wghtss[p][i] > 5e-4
-                print(round.(actss[p][i];digits=3), ", ", round(wghtss[p][i]*100;digits=1), " %")
+                print(round.(actss[p][i]; digits=3), ", ", round(wghtss[p][i] * 100; digits=1), " %")
                 print("; ")
             end
         end
@@ -15,22 +39,34 @@ function prettyprints(actss, wghtss)
 end
 
 
-function deltaprints(actss, wghtss;io=stdout)
+function deltaprints(actss, wghtss; io=stdout)
     function supfmt(act)
         if length(act) == 1
             return round(only(act); digits=2)
         else
-            return round.(act;digits=2)
+            return round.(act; digits=2)
         end
     end
-    function dprint(p,acts, wghts)
+    function dprint(p, acts, wghts)
         zp = collect(zip(acts, wghts))
-        aw = join(map(x -> "$(round(x[2];digits=3))\\delta_{ $(supfmt(x[1])) }", sort(filter(x -> x[2] > 5e-4 , zp), by=x -> x[2])), " + ")
+        aw = join(map(x -> "$(round(x[2];digits=3))\\delta_{ $(supfmt(x[1])) }", sort(filter(x -> x[2] > 5e-4, zp), by=x -> x[2])), " + ")
         return "\\mu_$p^\\star &\\approx $aw"
     end
-    println(io, "\\begin{align*}")
-    println(io, join([dprint(p, actss[p], wghtss[p]) for p in eachindex(actss)], ",\\\\ \n"), ".")
-    println(io, "\\end{align*}")
+
+    function xprint(p, acts, wghts)
+        i = findfirst(x -> x > 5e-4, wghts)
+        return "\\x_$p^\\star \\approx $(supfmt(acts[i]))"
+    end
+
+    if all(length(filter(x -> x > 5e-4, w)) == 1 for w in wghtss)
+        println(io, "\\begin{align*}")
+        println(io, join([xprint(p, actss[p], wghtss[p]) for p in eachindex(actss)], ",\\;\n"), ".")
+        println(io, "\\end{align*}")
+    else
+        println(io, "\\begin{align*}")
+        println(io, join([dprint(p, actss[p], wghtss[p]) for p in eachindex(actss)], ",\\\\ \n"), ".")
+        println(io, "\\end{align*}")
+    end
 end
 
 
@@ -74,45 +110,67 @@ function run_example(example; eps=1e-3)
     quack = Quack.quack_oracle(utils, nneg, null, dims)
     @time cnt, (actions, mixed, vals, best) = Quack.until_eps(quack, eps)
 
-    deltaprints(actions,mixed)
+    deltaprints(actions, mixed)
 
     cnt, (actions, mixed, vals, best)
 end
 
 function run_example_tex(name, example; io=stdout, eps=1e-3)
     utils, nneg, null, dims = example()
-    quack = Quack.quack_oracle(utils, nneg, null, dims)
+    Quack.quack_oracle(utils, nneg, null, dims)
+    stats_pre = @timed quack = Quack.quack_oracle(utils, nneg, null, dims)
     Quack.until_eps(quack, 1e10)
-    stats = @timed cnt, (actions, mixed, vals, best) = Quack.until_eps(quack, eps)
+    stats_run = @timed cnt, (actions, mixed, vals, best) = Quack.until_eps(quack, eps)
+
+    iter_word = (cnt > 1) ? "iterations" : "iterations"
 
     println(io, "\\item[Example \\ref{$(replace(name, "_"=>"."))}]")
-    println(io, "Time: \$$(round(stats.time; sigdigits=2))\\,s\$, iterations: \$$cnt\$\\\\")
-    println(io, "Equilibrium:")
-    deltaprints(actions,mixed; io)
-
+    println(io, "Converged in \$$(round(stats_run.time; sigdigits=2)) (+$(round(stats_pre.time; sigdigits=1)))\\,s\$ and \$$cnt\$ $iter_word to:")
+    deltaprints(actions, mixed; io)
 end
 
 function latexify_example(example)
     utils, nneg, null, dims = example()
-    vars = ntuple(i -> [Symbolics.variable(:x, i*10+j) for j in 1:dims[i]], length(dims))
+    vars = ntuple(i -> [Symbolics.variable(:x, i * 10 + j) for j in 1:dims[i]], length(dims))
 
     for i in eachindex(dims)
         println(latexify(utils[i](vars...)))
     end
 end
 
-function run_example_exploit(example; iterations)
+function run_progress(example; iterations)
     utils, nneg, null, dims = example()
     quack = Quack.quack_oracle(utils, nneg, null, dims)
 
-    exploit = Array{Any}(undef, iterations)
+    exploit = Vector{Vector{Float64}}(undef, iterations)
+    wassers = Vector{Vector{Float64}}(undef, iterations)
     iter = 1
 
+    prev_supp = nothing
+    prev_mixs = nothing
+
     for (actions, mixed, vals, best) in Iterators.take(quack, iterations)
-        exploit[iter] = collect(best) .- collect(vals)
+        exploit[iter] = max.(collect(best) .- collect(vals), floatmin())
+
+        if !isnothing(prev_supp)
+            wassers[iter] = [max(wasserstein(prev_supp[i], prev_mixs[i], actions[i], mixed[i]), floatmin()) for i in 1:length(dims)]
+        else
+            wassers[iter] = [NaN64 for i in 1:length(dims)]
+        end
+
         iter += 1
+        prev_supp = actions
+        prev_mixs = mixed
+
+        @show vals
     end
 
-    exploit
+    println()
+    @show prev_supp
+    @show prev_mixs
+    println()
+    deltaprints(prev_supp, prev_mixs)
+    println()
+    exploit, wassers
 end
 
