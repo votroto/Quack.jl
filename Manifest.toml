@@ -2,7 +2,7 @@
 
 julia_version = "1.11.3"
 manifest_format = "2.0"
-project_hash = "55ee1bf12089e6147da2d8363a3a498845da7d4b"
+project_hash = "8153936976f0ca4127c44fbb01bd3b99cdfc6910"
 
 [[deps.ADTypes]]
 git-tree-sha1 = "be7ae030256b8ef14a441726c4c37766b90b93a3"
@@ -384,6 +384,16 @@ deps = ["ArgTools", "FileWatching", "LibCURL", "NetworkOptions"]
 uuid = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
 version = "1.6.0"
 
+[[deps.Dualization]]
+deps = ["LinearAlgebra", "MathOptInterface"]
+git-tree-sha1 = "9fad46344c58e07f8f2d3170937b3978f8250860"
+uuid = "191a621a-6537-11e9-281d-650236a99e60"
+version = "0.7.1"
+weakdeps = ["JuMP"]
+
+    [deps.Dualization.extensions]
+    DualizationJuMPExt = "JuMP"
+
 [[deps.DynamicPolynomials]]
 deps = ["Future", "LinearAlgebra", "MultivariatePolynomials", "MutableArithmetics", "Reexport", "Test"]
 git-tree-sha1 = "98c4bb95af37e5d980129261fdd6dab0392c6607"
@@ -611,6 +621,12 @@ version = "1.27.0"
 
     [deps.JuMP.weakdeps]
     DimensionalData = "0703355e-b756-11e9-17c0-8b28908087d0"
+
+[[deps.LLVMOpenMP_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "eb62a3deb62fc6d8822c0c4bef73e4412419c5d8"
+uuid = "1d63c593-3942-5779-bab2-d838dc0a180e"
+version = "18.1.8+0"
 
 [[deps.LRUCache]]
 git-tree-sha1 = "5519b95a490ff5fe629c4a7aa3b3dfc9160498b3"
@@ -1049,6 +1065,26 @@ deps = ["Artifacts", "Bzip2_jll", "CompilerSupportLibraries_jll", "GMP_jll", "Ip
 git-tree-sha1 = "4a23f926d711535640963aea90a3f5d931ae52c7"
 uuid = "e5ac4fe4-a920-5659-9bf8-f9f73e9e79ce"
 version = "0.2.1+0"
+
+[[deps.SCS]]
+deps = ["MathOptInterface", "MutableArithmetics", "PrecompileTools", "SCS_jll", "SparseArrays"]
+git-tree-sha1 = "798bbf29dfe3b29785b92ad16814addad481aac7"
+uuid = "c946c3f1-0d1f-5ce8-9dea-7daa1f7e2d13"
+version = "2.2.0"
+
+    [deps.SCS.extensions]
+    SCSSCS_GPU_jllExt = ["SCS_GPU_jll"]
+    SCSSCS_MKL_jllExt = ["SCS_MKL_jll"]
+
+    [deps.SCS.weakdeps]
+    SCS_GPU_jll = "af6e375f-46ec-5fa0-b791-491b0dfa44a4"
+    SCS_MKL_jll = "3f2553a9-4106-52be-b7dd-865123654657"
+
+[[deps.SCS_jll]]
+deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "LLVMOpenMP_jll", "Libdl", "OpenBLAS32_jll"]
+git-tree-sha1 = "a3a1e2932b84a84f14cda577dbb34361b91332d7"
+uuid = "f4f2fc5b-1d94-523c-97ea-2ab488bedf4b"
+version = "3.2.8+0"
 
 [[deps.SHA]]
 uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
