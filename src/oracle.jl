@@ -47,7 +47,6 @@ function oracle(
     weights::NTuple{N}
 ) where {N}
 
-<<<<<<< HEAD
 #=
     @show x = only(actions[1][argmax(weights[1])])
     @show y = only(actions[2][argmax(weights[2])])
@@ -61,9 +60,7 @@ function oracle(
 #=
     mv1, ac1 = blotto_oracle_one(actions[2], weights[2], 1.0)
     mv2, ac2 = blotto_oracle_one(actions[1], weights[1], -1.0)
-=======
     stats1 = @timed mv1, ac1 = blotto_oracle_three(actions[2], weights[2], 1.0)
->>>>>>> 5b3ad0f126a5ae965cacb311e35d487e0637f000
 
     #statsc = @timed mvc, acc = blotto_oracle_cone(actions[2], weights[2])
 #
@@ -353,7 +350,6 @@ function best_response(
     end
 end
 
-<<<<<<< HEAD
 
 using JuMP
 using SumOfSquares
@@ -406,7 +402,6 @@ function oracle_lasserre(
         order += 1
     end
 end
-=======
 using DynamicPolynomials
 using MosekTools
 using SumOfSquares
@@ -559,4 +554,3 @@ function pmaxmom(
     objective_value(m)
 end
 
->>>>>>> 5b3ad0f126a5ae965cacb311e35d487e0637f000
