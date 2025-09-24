@@ -35,11 +35,14 @@ function iterate(mo::QuackIterable, actions=mo.start)
     values = tuple([u(ostr...) for u in payoffs]...)
     mixed = tuple([[1.0] for i in payoffs]...)
 =#
+    #_actions = ntuple(i->actions[1], length(actions))
+    #actions = _actions
 
     values, mixed = equilibrium(payoffs, actions)
     best, responses = oracle(payoffs, dom_nneg, dom_null, actions, mixed)
     extended = epspush.(actions, responses)
 
+<<<<<<< HEAD
     #=
     println()
     @show values
@@ -52,5 +55,13 @@ function iterate(mo::QuackIterable, actions=mo.start)
     println(atan(first(last(actions[1]))))
 =#
 
+=======
+    #println()
+    #println(values)
+    #println(actions)
+    #println(mixed)
+    #println(best)
+    #println(responses)
+>>>>>>> 5b3ad0f126a5ae965cacb311e35d487e0637f000
     (actions, mixed, values, best), extended
 end

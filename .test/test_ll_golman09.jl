@@ -101,8 +101,8 @@ function ex_golman09_isolated_p05_5d()
     dom_nneg(v) = (v[1], v[2], v[3], v[4], v[5], 1-v[1], 1-v[2], 1-v[3], 1-v[4], 1-v[5])
     dom_null(v) = v[1] + v[2] + v[3] + v[4] + v[5] - 1
 
-    f(x::Float64) = sign(x)*abs(x)^0.5
-    f(x) = x/(((x^2+1e-8)^0.25))
+    f(x) = sign(x)*sqrt(abs(x))
+    #f(x) = x/(((x^2+1e-8)^0.25))
 
     u1(x, y) = sum(f(x[i] - y[i]) for i in 1:5)
     u2(x, y) = -u1(x, y)
