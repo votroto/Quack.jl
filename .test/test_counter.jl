@@ -22,3 +22,13 @@ function ex_counter()
 
     (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (1, 1)
 end
+
+function ex_what()
+    dom_nneg(x) = (x[1] * (1 - x[1]),)
+    dom_null(x) = 0
+
+    u1(x, y) = -sqrt(sqrt((x[1] - y[1])^2))
+    u2(x, y) = -sqrt(sqrt((x[1] - tan(y[1]))^2))
+
+    (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (1, 1)
+end

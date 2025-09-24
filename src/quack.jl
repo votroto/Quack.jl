@@ -22,7 +22,7 @@ function quack_oracle(
     dom_nneg::NTuple{N,Function},
     dom_null::NTuple{N,Function},
     dims::NTuple{N,Int};
-    start=feasible_init(dom_nneg, dom_null, dims)
+    start=feasible_oracle_init(payoffs,dom_nneg, dom_null, dims)
 ) where {N}
     QuackIterable(payoffs, dom_nneg, dom_null, dims, start)
 end
@@ -30,17 +30,27 @@ end
 function iterate(mo::QuackIterable, actions=mo.start)
     payoffs, dom_nneg, dom_null = mo.payoffs, mo.dom_nneg, mo.dom_null
 
+#=
+    ostr = [last(e) for e in actions]
+    values = tuple([u(ostr...) for u in payoffs]...)
+    mixed = tuple([[1.0] for i in payoffs]...)
+=#
+
     values, mixed = equilibrium(payoffs, actions)
     best, responses = oracle(payoffs, dom_nneg, dom_null, actions, mixed)
     extended = epspush.(actions, responses)
 
+    #=
     println()
-    println(values)
+    @show values
+    @show actions
+    @show mixed
+    @show best
+    @show responses
 
-    println(actions)
-    println(mixed)
+    extended = tuple([[last(e)] for e in extended]...)
+    println(atan(first(last(actions[1]))))
+=#
 
-    println(best)
-    println(responses)
     (actions, mixed, values, best), extended
 end

@@ -47,6 +47,17 @@ function oracle(
     weights::NTuple{N}
 ) where {N}
 
+#=
+    @show x = only(actions[1][argmax(weights[1])])
+    @show y = only(actions[2][argmax(weights[2])])
+
+    armx = ((y,), (atan(x),))
+    mx = (payoffs[1](armx...), payoffs[2](armx...))
+
+    return mx, armx
+=#
+
+#=
     mv1, ac1 = blotto_oracle_one(actions[2], weights[2], 1.0)
     mv2, ac2 = blotto_oracle_one(actions[1], weights[1], -1.0)
 
@@ -59,7 +70,7 @@ function oracle(
     #mx = (payoffs[1](armx...), payoffs[2](armx...))
 #
     #return mx, armx
-
+=#
     slice = unilateral_payoffs_continuous(payoffs, actions, weights)
     improved = ntuple(i -> best_response(slice[i], dom_nneg[i], dom_null[i], last(actions[i])), N)
 
@@ -133,9 +144,62 @@ function best_response(
 
     @show JuMP.termination_status(m)
     @show value.(x)
-    if true || JuMP.termination_status(m) == JuMP.MOI.OPTIMAL
+    if JuMP.termination_status(m) == JuMP.MOI.OPTIMAL
         objective_value(m), tuple(value.(x)...)
     else
         NaN
+    end
+end
+
+
+using JuMP
+using SumOfSquares
+using MosekTools
+using DynamicPolynomials
+
+function _sdp_lasserre(u, S; order=maxdegree(u), optimizer=Mosek.Optimizer)
+    m = SOSModel(optimizer)
+
+    @variable(m, w)
+    @objective(m, Min, w)
+    c = @constraint(m, u <= w, domain = S, maxdegree = order)
+    optimize!(m)
+
+    value(w), moment_matrix(c), termination_status(m)
+end
+
+function _set_to_blegat(dom_nneg, dom_null, vars; radius=1)
+    zero_poly = sum(0 * xi for xi in vars)
+    ball_poly = radius - sum(xi^2 for xi in vars)
+    eqs = vec([e + zero_poly for e in dom_null(vars)])
+    ges = [ball_poly; [e + zero_poly for e in dom_nneg(vars)]...]
+    alg = algebraic_set(eqs)
+    basic_semialgebraic_set(alg, ges)
+end
+
+function oracle_lasserre(
+    payoff::Function,
+    dom_nneg::Function,
+    dom_null::Function,
+    start;
+    dim=length(start),
+    optimizer=optimizer_with_attributes(Mosek.Optimizer, MOI.Silent() => true)
+)
+    @polyvar x[1:dim]
+    u = payoff(x)
+    S = _set_to_blegat(dom_nneg, dom_null, x)
+
+    order = maxdegree(u)
+    while true
+        val, mom, term = _sdp_lasserre(u, S; order, optimizer)
+        strat = extractatoms(mom, 1e-3)
+                @show expectation(u, strat), val
+
+        if term == JuMP.OPTIMAL && !isnothing(strat)
+            _, i = findmax(s.weight for s in strat.atoms)
+            return val, tuple((strat.atoms[i]).center...)
+        end
+        println("fail")
+        order += 1
     end
 end
