@@ -40,6 +40,7 @@ function subgame_equilibrium(
     actions::NTuple{N,AbstractVector}
 ) where {N}
 
+#=
     pay = zeros(Float64, length(actions[1]), length(actions[2]))
 
     for i in Iterators.product(eachindex.(actions)...)
@@ -48,7 +49,7 @@ function subgame_equilibrium(
 
     wls, xss, yss, tim = linear_program(pay)
 
-    return tuple(wls, -wls), (xss, yss)
+    return tuple(wls, -wls), (xss, yss)=#
     # Oof!
 
     players = eachindex(payoffs)

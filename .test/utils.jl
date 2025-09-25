@@ -117,8 +117,10 @@ end
 
 function run_example_tex(name, example; io=stdout, eps=1e-3)
     utils, nneg, null, dims = example()
-    Quack.quack_oracle(utils, nneg, null, dims)
-    stats_pre = @timed quack = Quack.quack_oracle(utils, nneg, null, dims)
+    _start = Quack.feasible_init(nneg, null, dims)
+    Quack.quack_oracle(utils, nneg, null, dims; start=_start)
+    stats_pre = @timed start = Quack.feasible_init(nneg, null, dims)
+    quack = Quack.quack_oracle(utils, nneg, null, dims; start=start)
     Quack.until_eps(quack, 1e10)
     stats_run = @timed cnt, (actions, mixed, vals, best) = Quack.until_eps(quack, eps)
 

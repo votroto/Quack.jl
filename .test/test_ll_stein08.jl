@@ -25,7 +25,7 @@ function ex_stein08_2_4()
     # mixed NE
     # any phi and phi + pi weighted equally for both players.
 
-    dom_nneg(v) = pi^2 - v[1]^2
+    dom_nneg(v) = (pi^2 - v[1]^2,)
     dom_null(v) = 0
 
     alpha = 0.5
@@ -36,7 +36,7 @@ function ex_stein08_2_4()
 end
 
 function ex_stein08_3_10()
-    dom_nneg(v) = (1 - v[1]^2)
+    dom_nneg(v) = (1 - v[1]^2,)
     dom_null(v) = 0
 
     v1(x,y,z) = 1 + 2*x + 3*x^2 + 2*y*z + 4*x*y*z + 6*x^2*y*z + 3*y^2*z^2 + 6*x*y^2*z^2 + 9*x^2*y^2*z^2
