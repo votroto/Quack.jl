@@ -1,6 +1,3 @@
-include("../src/Quack.jl")
-using Revise
-
 # Separable and low-rank continuous games. Int J Game Theory 37, 475–504 (2008).
 # https://doi.org/10.1007/s00182-008-0129-2
 # Stein, N.D., Ozdaglar, A. & Parrilo, P.A.

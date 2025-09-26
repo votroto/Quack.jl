@@ -1,6 +1,3 @@
-include("../src/Quack.jl")
-using Revise
-
 # Separable Network Games with Compact Strategy Sets
 # Tomáš Kroupa, Sara Vannucci, Tomáš Votroubek
 

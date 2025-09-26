@@ -1,6 +1,3 @@
-include("../src/Quack.jl")
-using Revise
-
 # Double Oracle Algorithm for Computing Equilibria in Continuous Games
 # Adam, Lukáš & Horčík, Rostislav & Kasl, Tomáš & Kroupa, Tomáš. (2021).
 

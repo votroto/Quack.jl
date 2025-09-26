@@ -1,6 +1,3 @@
-include("../src/Quack.jl")
-using Revise
-
 using Base.Iterators: product
 using Gurobi
 using JuMP
@@ -38,18 +35,30 @@ function prettyprints(actss, wghtss)
     end
 end
 
-
 function deltaprints(actss, wghtss; io=stdout)
+    function probfmt(p)
+        cp = min(max(p, 0.0), 1.0)
+        if isapprox(cp, 1)
+            return ""
+        else
+            return round(p; digits=3)
+        end
+    end
+    function supnumfmt(x)
+        z = round(x; digits=2)
+        z = (z == -0.0) ? 0 : z
+        return isinteger(z) ? round(Int, z) : z
+    end
     function supfmt(act)
         if length(act) == 1
-            return round(only(act); digits=2)
+            return supnumfmt(only(act))
         else
-            return round.(act; digits=2)
+            return supnumfmt.(act)
         end
     end
     function dprint(p, acts, wghts)
         zp = collect(zip(acts, wghts))
-        aw = join(map(x -> "$(round(x[2];digits=3))\\delta_{ $(supfmt(x[1])) }", sort(filter(x -> x[2] > 5e-4, zp), by=x -> x[2])), " + ")
+        aw = join(map(x -> "$(probfmt(x[2]))\\delta_{ $(supfmt(x[1])) }", sort(filter(x -> x[2] > 5e-4, zp), by=x -> -x[2])), " + ")
         return "\\mu_$p^\\star &\\approx $aw"
     end
 
@@ -126,8 +135,10 @@ function run_example_tex(name, example; io=stdout, eps=1e-3)
 
     iter_word = (cnt > 1) ? "iterations" : "iterations"
 
+    #incentive = round(Quack.max_incentive(nothing, nothing, vals, best);sigdigits=1)
+
     println(io, "\\item[Example \\ref{$(replace(name, "_"=>"."))}]")
-    println(io, "Converged in \$$(round(stats_run.time; sigdigits=2)) (+$(round(stats_pre.time; sigdigits=1)))\\,s\$ and \$$cnt\$ $iter_word to:")
+    println(io, "Converged in \$$(round(stats_run.time; sigdigits=2))\\;(+$(round(stats_pre.time; sigdigits=1)))\\,s\$ and \$$cnt\$ $iter_word to:")
     deltaprints(actions, mixed; io)
 end
 

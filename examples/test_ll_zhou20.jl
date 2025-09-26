@@ -1,6 +1,3 @@
-include("../src/Quack.jl")
-using Revise
-
 # Computational Optimization and Applications (2020) 75:817–832
 # https://doi.org/10.1007/s10589-019-00141-6
 # Saddle points of rational functions
@@ -8,7 +5,7 @@ using Revise
 
 # Examples of two-player zero-sum rational polynomial games (mostly) on compact nD subsets of R.
 
-function ex_zhou19_5_1()
+function _ex_zhou19_5_1()
     # two saddle points
     # x∗ = (0.3165, 0.3165, 0.3670), y∗ = (0.0000, 1.0000, 0.0000)
     # x∗ = (0.3165, 0.3165, 0.3670), y∗ = (0.0000, 0.0000, 1.0000)
@@ -42,12 +39,12 @@ function _ex_zhou19_5_2_i()
     (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (2, 2)
 end
 
-function ex_zhou19_5_2_ii()
+function _ex_zhou19_5_2_ii()
     # saddle point
     # x∗ = (0.0722, 0.0155, 0.0394) × 10^−15,
     # y∗ = (−0.1210, −0.0824, −0.0632) × 10^−15
 
-    dom_nneg(v) = (1 - v[1], 1 - v[2], 1 - v[3], 1 + v[1], 1 + v[2], 1 + v[3])
+    dom_nneg(v) = (1 - v[1]^2, 1 - v[2]^2, 1 - v[3]^2)
     dom_null(v) = 0
 
     p(x, y) = sum(x[i]^2 for i in 1:3) - sum(y[i]^2 for i in 1:3)
@@ -90,7 +87,7 @@ function ex_zhou19_5_3_ii()
     (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (3, 3)
 end
 
-function ex_zhou19_5_4_i()
+function _ex_zhou19_5_4_i()
     # saddle point
     # x∗ = (0.0015, 0.0015, 0.0015), y∗ = (0.0015, 0.0015, 0.0015)
 
@@ -127,7 +124,7 @@ function _ex_zhou19_5_4_ii()
     (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (3, 3)
 end
 
-function ex_zhou19_5_5_i()
+function _ex_zhou19_5_5_i()
     # no saddle point
 
     dom_nneg(v) = (1 - (v[1]^2 + v[2]^2))
@@ -143,7 +140,7 @@ function ex_zhou19_5_5_i()
 end
 
 
-function ex_zhou19_5_5_ii()
+function _ex_zhou19_5_5_ii()
     # saddle point
     # x∗ = (0.4730, 0.4476, 0.3416), y∗ = (0.6708, 0.5585, 0.4879)
 
@@ -159,23 +156,7 @@ function ex_zhou19_5_5_ii()
     (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (3, 3)
 end
 
-
-function ex_zhou19_5_6_i()
-    # no saddle point
-
-    dom_nneg(v) = 1
-    dom_null(v) = (1 - (v[1]^2 + v[2]^2 + v[3]^2))
-
-    p(x, y) = sum(x[i]^3 + y[i]^3 for i in 1:3) + 2 * (x[1] * x[2] * y[1] * y[2] + x[1] * x[3] * y[1] * y[3] + x[2] * x[3] * y[2] * y[3])
-    q(x, y) = x[1] - y[1] + 1
-
-    u1(x, y) = -(p(x, y) / q(x, y))
-    u2(x, y) = -u1(x, y)
-
-    (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (3, 3)
-end
-
-function ex_zhou19_5_6_ii()
+function _ex_zhou19_5_6_ii()
     # saddle point
     # x∗ = (0.4082, 0.4082, 0.8165), y∗ = (−0.4082, −0.8165, −0.4082)
 
@@ -191,7 +172,7 @@ function ex_zhou19_5_6_ii()
     (u1, u2), (dom_nneg, dom_nneg), (dom_null, dom_null), (3, 3)
 end
 
-function ex_zhou19_5_7_i()
+function _ex_zhou19_5_7_i()
     # no saddle point
 
     # there so is...
@@ -214,17 +195,17 @@ function ex_zhou19_5_7_i()
     (u1, u2), (dom_nneg1, dom_nneg2), (dom_null1, dom_null2), (3, 2)
 end
 
-function ex_zhou19_5_7_i_polar()
+function _ex_zhou19_5_7_i_polar()
     # no saddle point
 
     # there so is...
     # x = [0.8812945920343842, 0.9716157415160604]
     # y = [1.0174554472964583]
 
-    dom_nneg1(v) = (v[1]-1e-8, v[2]-1e-8, pi / 2 - v[1], pi / 2 - v[2])
+    dom_nneg1(v) = (v[1] * (pi / 2 - v[1]), v[2] * (pi / 2 - v[2]))
     dom_null1(v) = 0
 
-    dom_nneg2(v) = (v[1]-1e-8, pi / 2 - v[1] + 1e-8)
+    dom_nneg2(v) = (v[1] * (pi / 2 - v[1]), )
     dom_null2(v) = 0
 
     p(x, y) = sum(x[i]^2 - x[i] for i in 1:3) + sum(y[i] - y[i]^2 for i in 1:2)
@@ -248,7 +229,7 @@ function ex_zhou19_5_7_i_polar()
     (u1, u2), (dom_nneg1, dom_nneg2), (dom_null1, dom_null2), (2, 1)
 end
 
-function ex_zhou19_5_7_ii()
+function _ex_zhou19_5_7_ii()
     # saddle point
     # x∗ = (0.9519, 0.2167, 0.2167), y∗ = (1.0000, 0.0000, 0.0000)
 

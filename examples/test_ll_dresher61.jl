@@ -1,6 +1,3 @@
-include("../src/Quack.jl")
-using Revise
-
 # Games of strategy: theory and applications
 # Dresher, Melvin
 

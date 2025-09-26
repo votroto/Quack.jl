@@ -1,9 +1,5 @@
-include("../src/Quack.jl")
-using Revise
-
 # The Theory of Infinite Games
 # Karlin, Samuel
-
 
 function ex_karlin59_vol2_sec71_ex1()
     dom_nneg(x) = (x[1], 1 - x[1])

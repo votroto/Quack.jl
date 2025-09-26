@@ -1,6 +1,3 @@
-include("../src/Quack.jl")
-using Revise
-
 # Nash equilibrium seeking over digraphs with row-stochastic matrices and network-independent step-sizes
 # arXiv:2309.07897 [cs.GT]
 

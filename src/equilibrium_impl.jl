@@ -8,30 +8,9 @@ function __init__()
     return
 end
 
-#using AmplNLWriter, Couenne_jll
-#_default_optimizer() = AmplNLWriter.Optimizer(Couenne_jll.amplexe)
 _default_optimizer() = Gurobi.Optimizer(GRB_ENV_REF[])
 
-
-"""Computes the value and NE strategies for a zero-sum game"""
-function linear_program(u::AbstractMatrix; optimizer=_default_optimizer)
-    m = Model(optimizer)
-
-    ny = size(u, 2)
-    @variable(m, ys[1:ny], lower_bound=0, upper_bound=1)
-    @variable(m, w)
-
-    @constraint(m, sum(ys) == 1)
-    @constraint(m, dx, u * ys .<= w)
-    @objective(m, Min, w)
-    optimize!(m)
-
-    value.(w), abs.(dual.(dx)), value.(ys), solve_time(m)
-end
-
 """
-    nash_equilibrium(payoffs)
-
 Finds a nash equilibrium of a strategic game. Returns the payoffs and the
 corresponding strategies.
 """
@@ -39,17 +18,6 @@ function subgame_equilibrium(
     payoffs::NTuple{N,Function},
     actions::NTuple{N,AbstractVector}
 ) where {N}
-
-#=
-    pay = zeros(Float64, length(actions[1]), length(actions[2]))
-
-    for i in Iterators.product(eachindex.(actions)...)
-        pay[i...] = payoffs[1](getindex.(actions, i)...)
-    end
-
-    wls, xss, yss, tim = linear_program(pay)
-
-    return tuple(wls, -wls), (xss, yss)=#
     # Oof!
 
     players = eachindex(payoffs)

@@ -1,6 +1,3 @@
-include("../src/Quack.jl")
-using Revise
-
 # Characterization and computation of local Nash equilibria in continuous games
 # Lillian J. Ratliff; Samuel A. Burden; S. Shankar Sastry
 

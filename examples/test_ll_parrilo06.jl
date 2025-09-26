@@ -1,6 +1,3 @@
-include("../src/Quack.jl")
-using Revise
-
 # Proceedings of the 45th IEEE Conference on Decision and Control
 # DOI: 10.1109/CDC.2006.377261
 # Polynomial games and sum of squares optimization

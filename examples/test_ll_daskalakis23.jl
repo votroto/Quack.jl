@@ -1,6 +1,3 @@
-include("../src/Quack.jl")
-using Revise
-
 # STay-ON-the-Ridge: Guaranteed Convergence to Min-Max Critical Points in Nonconvex-Nonconcave Games
 # Daskalakis et al 2023
 
