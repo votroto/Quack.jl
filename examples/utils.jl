@@ -131,6 +131,7 @@ function run_example_tex(name, example; io=stdout, eps=1e-3)
     stats_pre = @timed start = Quack.feasible_init(nneg, null, dims)
     quack = Quack.quack_oracle(utils, nneg, null, dims; start=start)
     Quack.until_eps(quack, 1e10)
+    println("ruuun")
     stats_run = @timed cnt, (actions, mixed, vals, best) = Quack.until_eps(quack, eps)
 
     iter_word = (cnt > 1) ? "iterations" : "iterations"
