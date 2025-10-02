@@ -22,7 +22,7 @@ function quack_oracle(
     dom_nneg::NTuple{N,Function},
     dom_null::NTuple{N,Function},
     dims::NTuple{N,Int};
-    start=feasible_oracle_init(payoffs,dom_nneg, dom_null, dims)
+    start=feasible_init(dom_nneg, dom_null, dims)
 ) where {N}
     QuackIterable(payoffs, dom_nneg, dom_null, dims, start)
 end

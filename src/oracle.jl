@@ -46,16 +46,17 @@ function oracle(
     actions::NTuple{N,AbstractVector},
     weights::NTuple{N}
 ) where {N}
+    #@show actions[1]
+    #@show actions[2]
 
-#=
-    @show x = only(actions[1][argmax(weights[1])])
-    @show y = only(actions[2][argmax(weights[2])])
+     x = only(actions[1][argmax(weights[1])])
+     y = only(actions[2][argmax(weights[2])])
 
     armx = ((y,), (atan(x),))
     mx = (payoffs[1](armx...), payoffs[2](armx...))
 
     return mx, armx
-=#
+
 
 #=
     mv1, ac1 = blotto_oracle_one(actions[2], weights[2], 1.0)
@@ -132,7 +133,7 @@ function blotto_oracle_one(
         NaN
     end
 end
-
+#=
 using DynamicPolynomials
 function pmaxgbi(
     payoff;
@@ -554,3 +555,4 @@ function pmaxmom(
     objective_value(m)
 end
 
+=#

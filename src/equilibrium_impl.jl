@@ -9,9 +9,9 @@ function __init__()
     return
 end
 
-using AmplNLWriter, Bonmin_jll,Couenne_jll
+#using AmplNLWriter, Bonmin_jll,Couenne_jll
 #_default_optimizer() = AmplNLWriter.Optimizer(Couenne_jll.amplexe)
-using SCIP
+#using SCIP
 #_default_optimizer() = SCIP.Optimizer()
 _default_optimizer() = Gurobi.Optimizer(GRB_ENV_REF[])
 
@@ -26,8 +26,16 @@ function subgame_equilibrium(
     payoffs::NTuple{N,Function},
     actions::NTuple{N,AbstractVector}
 ) where {N}
+    function evec(n)
+        xs = zeros(n)
+        xs[n] = 1.0
+        return xs
+    end
 
-return subgame_symmetric_equilibrium(payoffs,actions)
+    return ntuple(i->payoffs[i](actions[1][end],actions[2][end]), N), ntuple(i -> evec(length(actions[i])), N)
+
+
+#return subgame_symmetric_equilibrium(payoffs,actions)
 
     # Oof!
 
@@ -48,6 +56,22 @@ return subgame_symmetric_equilibrium(payoffs,actions)
         end
     end
     allinput = String(take!(ioin))
+
+
+#=
+    fff = zeros(Float64, length(actions[1]), length(actions[2]))
+    qqq = zeros(Float64, length(actions[1]), length(actions[2]))
+    for i in eachindex(actions[1])
+        for j in eachindex(actions[2])
+            fff[i,j]= payoffs[1](actions[1][i],actions[2][j])
+            qqq[i,j]= payoffs[2](actions[1][i],actions[2][j])
+        end
+    end
+    display(fff)
+    display(qqq)
+=#
+
+
     open(pipeline(`gambit-logit -q -e -m1e-6`; stdin=IOBuffer(allinput)), "r", stdout) do ioout
         zz = read(ioout, String)
 

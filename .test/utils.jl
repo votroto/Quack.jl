@@ -107,7 +107,7 @@ end
 
 function run_example(example; eps=1e-3)
     utils, nneg, null, dims = example()
-    quack = Quack.quack_oracle(utils, nneg, null, dims)
+    quack = Quack.quack_oracle(utils, nneg, null, dims;start=([(1.0,)],[(1.0,)]))
     @time cnt, (actions, mixed, vals, best) = Quack.until_eps(quack, eps)
 
     deltaprints(actions, mixed)
