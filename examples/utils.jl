@@ -1,3 +1,5 @@
+include("../src/Quack.jl")
+
 using Base.Iterators: product
 using Gurobi
 using JuMP

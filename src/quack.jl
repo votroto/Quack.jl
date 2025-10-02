@@ -29,11 +29,9 @@ end
 
 function iterate(mo::QuackIterable, actions=mo.start)
     payoffs, dom_nneg, dom_null = mo.payoffs, mo.dom_nneg, mo.dom_null
+
     values, mixed = equilibrium(payoffs, actions)
-    #println()
-    #println("startoracle")
-    zz = @timed best, responses = oracle(payoffs, dom_nneg, dom_null, actions, mixed)
-    #println("doi $(zz.time)")
+    best, responses = oracle(payoffs, dom_nneg, dom_null, actions, mixed)
     extended = epspush.(actions, responses)
 
     (actions, mixed, values, best), extended

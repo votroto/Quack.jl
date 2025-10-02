@@ -29,5 +29,5 @@ end
 Compute the player equilibrium strategies in a subgame restricted to actions.
 """
 function equilibrium(payoffs, actions)
-    return polymatrix_equilibrium(payoffs, actions)
+    return subgame_equilibrium(payoffs, actions)
 end
