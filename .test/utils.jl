@@ -107,7 +107,7 @@ end
 
 function run_example(example; eps=1e-3)
     utils, nneg, null, dims = example()
-    quack = Quack.quack_oracle(utils, nneg, null, dims;start=([(1.0,)],[(1.0,)]))
+    quack = Quack.quack_oracle(utils, nneg, null, dims;start=([(1.0,)],[(0.5+0.5*atan(1),)]))
     @time cnt, (actions, mixed, vals, best) = Quack.until_eps(quack, eps)
 
     deltaprints(actions, mixed)
@@ -140,7 +140,7 @@ end
 
 function run_progress(example; iterations)
     utils, nneg, null, dims = example()
-    quack = Quack.quack_oracle(utils, nneg, null, dims)
+    quack = Quack.quack_oracle(utils, nneg, null, dims;start=([(0.9,)],[(0.8,)]))
 
     exploit = Vector{Vector{Float64}}(undef, iterations)
     wassers = Vector{Vector{Float64}}(undef, iterations)

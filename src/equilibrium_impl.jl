@@ -32,7 +32,8 @@ function subgame_equilibrium(
         return xs
     end
 
-    return ntuple(i->payoffs[i](actions[1][end],actions[2][end]), N), ntuple(i -> evec(length(actions[i])), N)
+    imin = (argmin(actions[1]), argmin(actions[2]))
+    return ntuple(i->payoffs[i](actions[1][imin[1]],actions[2][imin[2]]), N), ntuple(i -> evec(imin[i]), N)
 
 
 #return subgame_symmetric_equilibrium(payoffs,actions)

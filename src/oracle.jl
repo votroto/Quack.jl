@@ -49,6 +49,8 @@ function oracle(
     #@show actions[1]
     #@show actions[2]
 
+    @assert count(x->x>=1e-2, weights[1]) == 1
+    @assert count(x->x>=1e-2, weights[2]) == 1
      x = only(actions[1][argmax(weights[1])])
      y = only(actions[2][argmax(weights[2])])
 
@@ -323,7 +325,7 @@ function blotto_oracle_cone(
     end
 end
 
-
+=#
 function best_response(
     payoff::Function,
     dom_nneg::Function,
@@ -350,7 +352,7 @@ function best_response(
         NaN
     end
 end
-
+#=
 
 using JuMP
 using SumOfSquares
