@@ -1,6 +1,8 @@
 # Quack
 
-Multiple Oracle algorithm without the oracles (this is silly and **unstable**).
+Multiple Oracle algorithm (**unstable** due to a dependency on the Gambit library).
+For an application restricted to two-player continuous games, have a look at  [DoubleQuack](https://github.com/votroto/DoubleQuack.jl).
+
 
 ## Example Torus Game (Chasnov 2019)
 
