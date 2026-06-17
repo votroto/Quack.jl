@@ -34,13 +34,5 @@ function iterate(mo::QuackIterable, actions=mo.start)
     best, responses = oracle(payoffs, dom_nneg, dom_null, actions, mixed)
     extended = epspush.(actions, responses)
 
-    println()
-    println(values)
-
-    println(actions)
-    println(mixed)
-
-    println(best)
-    println(responses)
     (actions, mixed, values, best), extended
 end

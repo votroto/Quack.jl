@@ -8,5 +8,6 @@ include("quack.jl")
 include("oracle.jl")
 include("equilibrium_impl.jl")
 include("equilibrium.jl")
+include("logit.jl")
 
 end

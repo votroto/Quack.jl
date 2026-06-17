@@ -1,5 +1,4 @@
 include("../src/Quack.jl")
-using Revise
 
 # Foundations of Computational Mathematics (2022) 22:1133–1169
 # https://doi.org/10.1007/s10208-021-09526-8

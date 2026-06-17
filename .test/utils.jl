@@ -1,5 +1,4 @@
 include("../src/Quack.jl")
-using Revise
 
 using Base.Iterators: product
 using Gurobi

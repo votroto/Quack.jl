@@ -9,7 +9,6 @@ function max_incentive(_, _, values::NTuple{N,F}, best::NTuple{N,F}) where {N,F}
     incentive_max
 end
 
-
 function unilateral_payoffs_continuous(
     payoffs::NTuple{N,Function},
     actions::NTuple{N, AbstractVector},
