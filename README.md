@@ -2,8 +2,9 @@
 
 Multiple Oracle algorithm for general-sum multiplayer continuous games.
 The API is **not stable** yet! It will be ported from DoubleQuack.
-The subgame equilibrium is computed by an LLM port of the logit tool from gambit.
+The subgame equilibrium is computed by an LLM port of the logit tool from Gambit.
 
+For an application restricted to two-player continuous games, have a look at  [DoubleQuack](https://github.com/votroto/DoubleQuack.jl).
 
 ## Example Torus Game (Chasnov 2019)
 
