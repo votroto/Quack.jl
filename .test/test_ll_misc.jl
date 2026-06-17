@@ -1,5 +1,4 @@
 include("../src/Quack.jl")
-using Revise
 
 function ex_misc_square_diff()
     dom_nneg(x) = 1 - x[1]^2

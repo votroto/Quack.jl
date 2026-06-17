@@ -1,5 +1,4 @@
 include("../src/Quack.jl")
-using Revise
 
 # Convergence Analysis of Gradient-Based Learning in Continuous Games
 # Benjamin Chasnov, Lillian Ratliff, Eric Mazumdar, Samuel Burden

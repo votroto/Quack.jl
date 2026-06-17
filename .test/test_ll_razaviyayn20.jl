@@ -1,5 +1,4 @@
 include("../src/Quack.jl")
-using Revise
 
 # Non-convex Min-Max Optimization: Applications, Challenges, and Recent Theoretical Advances
 # Meisam Razaviyayn, Tianjian Huang, Songtao Lu, Maher Nouiehed, Maziar Sanjabi, Mingyi Hong

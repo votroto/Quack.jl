@@ -1,5 +1,4 @@
 include("../src/Quack.jl")
-using Revise
 
 # Characterization and Computation of Correlated Equilibria in Infinite Games
 # Noah D. Stein, Pablo A. Parrilo, and Asuman Ozdaglar

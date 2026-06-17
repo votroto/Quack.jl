@@ -1,5 +1,4 @@
 include("../src/Quack.jl")
-using Revise
 
 # Universal Gradient Descent Ascent Method for Nonconvex-Nonconcave Minimax Optimization
 # Taoli Zheng

@@ -1,5 +1,4 @@
 include("../src/Quack.jl")
-using Revise
 
 # Sarath Yasodharan and Patrick Loiseau. 2019.
 # Nonzero-sum adversarial hypothesis testing games.

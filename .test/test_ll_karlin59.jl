@@ -1,5 +1,4 @@
 include("../src/Quack.jl")
-using Revise
 
 # The Theory of Infinite Games
 # Karlin, Samuel

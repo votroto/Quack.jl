@@ -1,5 +1,4 @@
 include("../src/Quack.jl")
-using Revise
 
 # Russell Golman and Scott E Page. “General Blotto: Games Of Allocative Strategic
 # Mismatch”. In: Public Choice 138.3-4 (2009), pp. 279–299

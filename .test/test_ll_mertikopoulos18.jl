@@ -1,5 +1,4 @@
 include("../src/Quack.jl")
-using Revise
 
 # Optimistic Mirror Descent In Saddle-Point Problems: Going The Extra (Gradient) Mile
 # Panayotis Mertikopoulos, Bruno Lecouat, Houssam Zenati, Chuan-Sheng Foo, Vijay Chandrasekhar, Georgios Piliouras

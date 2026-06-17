@@ -1,5 +1,4 @@
 include("../src/Quack.jl")
-using Revise
 
 # Computational Optimization and Applications (2020) 75:817–832
 # https://doi.org/10.1007/s10589-019-00141-6

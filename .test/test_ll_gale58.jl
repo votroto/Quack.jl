@@ -1,5 +1,4 @@
 include("../src/Quack.jl")
-using Revise
 
 # Gale, D., & Gross, O. (1958). A note on polynomial and separable games.
 # Pacific J. Math., 8 (4), 735–741. https://projecteuclid.org:443/euclid.pjm/1103039699
