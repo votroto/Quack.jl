@@ -1,14 +1,4 @@
-
-const GRB_ENV_REF = Ref{Gurobi.Env}()
-
-function __init__()
-    # Reuse environment between solves
-    global GRB_ENV_REF
-    GRB_ENV_REF[] = Gurobi.Env()
-    return
-end
-
-_default_optimizer() = Gurobi.Optimizer(GRB_ENV_REF[])
+using LogitNash
 
 """
     nash_equilibrium(payoffs)
@@ -32,7 +22,7 @@ function subgame_equilibrium(
         end
     end
 
-    nes = logit_strategy_solve(pay)
+    nes, status = LogitNash.nash(pay)
 
     wout = zeros(N)
     for i in Iterators.product(eachindex.(actions)...)

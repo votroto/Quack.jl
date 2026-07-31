@@ -2,7 +2,7 @@
 
 julia_version = "1.12.4"
 manifest_format = "2.0"
-project_hash = "e12e4964555f9acb6f167c8174bd3219bbb879a7"
+project_hash = "7b1c0fd416d9768749b7b78fdc93f52da9b05c63"
 
 [[deps.Artifacts]]
 uuid = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
@@ -160,6 +160,14 @@ version = "1.0.1"
 [[deps.Logging]]
 uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
 version = "1.11.0"
+
+[[deps.LogitNash]]
+deps = ["LinearAlgebra"]
+git-tree-sha1 = "ae680898d7d74fdd7030029f3bbcad0011039fb2"
+repo-rev = "main"
+repo-url = "https://github.com/votroto/LogitNash.jl"
+uuid = "56ed5f9e-c32e-46b8-b489-5928d745fddb"
+version = "0.1.5"
 
 [[deps.MacroTools]]
 git-tree-sha1 = "1e0228a030642014fe5cfe68c2c0a818f9e3f522"
